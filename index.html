@@ -875,12 +875,12 @@ require([
 
     const mineralLandAssessments = new FeatureLayer({
         url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/13",
-        title: "WSA Mineral Land Assessment (WSA)",
+        title: "WSA Mineral Land Assessment",
         opacity: 0.5,
         outFields: ["*"],
 
         popupTemplate: {
-            title: "<b>U.S. Bureau of Mines Wilderness Study Area Mineral Land Assessment</b>",
+            title: "<b>U.S. Bureau of Mines Wilderness Study Area Mineral Land Assessment (WSA)</b>",
             content: "{wsa:wsaContent}{file:wsaContent}{url:wsaContent}"
 
         },
@@ -1023,7 +1023,7 @@ require([
 
     app.activeView.map.add(countyLayer);
     app.activeView.map.add(adminBounds);
-    app.activeView.map.add(mineralLandAssesments);
+    app.activeView.map.add(mineralLandAssessments);
 
     app.activeView.map.add(miningDistricts);
 
