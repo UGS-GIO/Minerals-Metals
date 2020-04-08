@@ -35,7 +35,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <!--link rel="stylesheet" href="../../dist/css/calcite-maps.min-v0.10.css"-->
     <!-- works -->
 
-    <!-- ArcGIS JS 4 -->
+    <!-- ArcGIS JS 4.10 -->
     <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
     <link rel="stylesheet" href="lightbox2/dist/css/lightbox.min.css">
 
@@ -310,6 +310,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="panel-body">
 
                     <p style="text-align: justify;">Although this product represents the work of professional scientists, the Utah Department of Natural Resources, Utah Geological Survey and U.S. Department of the Interior, U.S. Bureau of Land Management make no warranty, expressed or implied, regarding its suitability for any particular use. The Utah Department of Natural Resources, Utah Geological Survey, and U.S. Department of the Interior, U.S. Bureau of Land Management shall not be liable under any circumstances for any direct, indirect, special, incidental, or consequential damages with respect to claims by users of this product. The Utah Geological Survey and U.S. Bureau of Land Management do not guarantee accuracy or completeness of the data. The views and conclusions contained in this document are those of the authors and should not be interpreted as necessarily representing the official policies, either expressed or implied, of the U.S. Government. Persons or agencies using these data specifically agree not to misrepresent the data, nor to imply that changes they made were approved by the Utah Geological Survey, and should indicate the data source and any modifications made on plots, digital copies, derivative products, and in metadata. The authors' determinations of resource potential DO NOT imply a determination of locatability for claim-staking purposes. The authors' determinations of resource potential also DO NOT imply potential for development of mineral resources.</p>
+                    <p>The Utah Geological Survey presents U.S. Bureau of Mines Mineral Land Assessments as a public service and has no role in the production or approval of these reports. The Utah Department of Natural Resources, Utah Geological Survey makes no warranty, expressed or implied, regarding the suitability of these reports for a particular purpose and shall not be liable under any circumstances for any direct, indirect, special, incidental, or consequential damages with respect to claims by users of this product.</p>
 
                 </div>
             </div>
@@ -744,10 +745,57 @@ require([
         return content;
 
     }
+    
+    silicaContent = function(value, key, data) {
+        var content = "";
+
+        if (key === "Age") {
+            if (data.Age) {
+                content += "<span class='bold' title='Age'><b>Age: </b></span>" + data.Age + "</b><br>";
+            }
+        }
+        if (key === "UnitName") {
+            if (data.UnitName) {
+                content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>" + data.UnitName + "</b><br>";
+            }
+        }
+
+        if (key === "res_pot_rank") {
+            if (data.res_pot_rank) {
+                content += "<br><span class='bold' title='Show complete report for Silica'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Silica.pdf' target='_blank'><b>Layer Information</b></a><br>";
+            }
+        }
+
+
+        return content;
+
+    }
 
     let attachmentsElement = new AttachmentsContentElement({
         displayType: "list"
     });
+
+    wsaContent = function(value, key, data) {
+        var content = "";
+
+        if (key === "wsa") {
+            if (data.wsa) {
+                content += "<span class='bold' title='Age'><b>WSA: </b></span>" + data.wsa + "</b><br>";
+            }
+        }
+
+
+
+        if (key === "url") {
+             if (data.url) {
+                 content += "<br><span class='bold' title='Download Mineral Land Assessment for Wilderness Study Area'></span>" + "<a href='" + data.url + "' target='_blank'><b>Download Mineral Land Assessment for Wilderness Study Area</b></a><br>";
+            }
+         }
+
+
+        return content;
+
+    }
 
 
     //remove panels when user clicks on map
@@ -807,7 +855,7 @@ require([
     // });
 
     const miningDistricts = new FeatureLayer({
-        url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/6",
+        url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/7",
         title: "Mining Districts",
         outFields: ["*"],
         opacity: 0.5,
@@ -825,17 +873,31 @@ require([
         visible: true,
     });
 
-    const mineralLandAssesments = new FeatureLayer({
+    const mineralLandAssessments = new FeatureLayer({
         url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/13",
-        title: "WSA Mineral Land Assesment",
+        title: "WSA Mineral Land Assessment",
         opacity: 0.5,
         outFields: ["*"],
 
-        // popupTemplate: {
-        //     title: "<b>Bentonite Potential</b>",
-        //     content: "{Age:bentMinContent}{UnitName:bentMinContent}{Commodity:bentMinContent}"
+        popupTemplate: {
+            title: "<b>U.S. Bureau of Mines Wilderness Study Area (WSA) Mineral Land Assessment</b>",
+            content: "{wsa:wsaContent}{file:wsaContent}{url:wsaContent}"
 
-        // },
+        },
+        visible: false,
+    });
+
+    const silica = new FeatureLayer({
+        url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/5",
+        title: "Silica",
+        opacity: 0.5,
+        outFields: ["*"],
+
+        popupTemplate: {
+            title: "<b>Silica Potential</b>",
+            content: "{Age:silicaContent}{UnitName:silicaContent}{res_pot_rank:silicaContent}"
+
+        },
         visible: false,
     });
 
@@ -895,7 +957,7 @@ require([
     const industrialMins = new GroupLayer({
         title: "Industrial Mineral Resource Potential",
         visible: true,
-        layers: [bentonite, dolomite, gypsum, limestone]
+        layers: [bentonite, dolomite, gypsum, limestone, silica]
     });
 
     const adminlabelClass = { // autocasts as new LabelClass()
@@ -916,7 +978,7 @@ require([
     };
 
     const adminBounds = new FeatureLayer({
-        url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/11",
+        url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/12",
         title: "Land Ownership",
         outFields: ["*"],
         legendEnabled: true,
@@ -944,7 +1006,7 @@ require([
     };
 
     const countyLayer = new FeatureLayer({
-        url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/10",
+        url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/11",
         popupEnabled: false,
         name: "Counties",
         title: "Counties",
@@ -961,11 +1023,12 @@ require([
 
     app.activeView.map.add(countyLayer);
     app.activeView.map.add(adminBounds);
+    app.activeView.map.add(mineralLandAssessments);
 
     app.activeView.map.add(miningDistricts);
 
     app.activeView.map.add(industrialMins);
-    app.activeView.map.add(mineralLandAssesments);
+    
 
 
 
