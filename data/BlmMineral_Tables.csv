@@ -1,0 +1,8 @@
+﻿Name,Alias,EditorTracking,CatalogPath
+mining_districts__ATTACH,-,Disabled,\\168.180.168.181\geology\html\apps\blm_mineral\mxd\BlM.Mineral\v107\All_data.gdb\mining_districts__ATTACH
+ATTACHMENTID,OID,,
+REL_OBJECTID,Integer,,
+CONTENT_TYPE,String,,
+ATT_NAME,String,,
+DATA_SIZE,Integer,,
+DATA,Blob,,
