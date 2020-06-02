@@ -36,8 +36,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <!-- works -->
 
     <!-- ArcGIS JS 4.10 -->
-    <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/css/main.css">
     <link rel="stylesheet" href="lightbox2/dist/css/lightbox.min.css">
+    <link  href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.5.0/viewer.css" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.5.0/viewer.js"></script>
 
     <style>
         html,
@@ -295,7 +298,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div id="collapseDetails" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingDetails">
                 <div class="panel-body">
 
-                    <div id="attDetails"></div>
+                    <div id="gallery">
+                        <ul class="pictures" id="attDetails">
+                </ul>
+              </div>
 
                 </div>
             </div>
@@ -340,7 +346,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </script>
 
     <!-- ArcGIS JS 4 -->
-    <script src="https://js.arcgis.com/4.10/"></script>
+    <script src="https://js.arcgis.com/4.15/"></script>
 
 
     <script>
@@ -353,7 +359,8 @@ require([
     "esri/layers/GroupLayer",
     "esri/views/MapView",
     "esri/views/SceneView",
-    "esri/support/ContentElement/Attachments",
+    "esri/popup/content/AttachmentsContent",
+    "esri/tasks/support/RelationshipQuery",
     "esri/widgets/Search",
     "esri/core/watchUtils",
     "esri/widgets/Home",
@@ -380,7 +387,7 @@ require([
     "dojo/dom-construct",
     "dojo/domReady!"
 
-], function(Map, Basemap, Graphic, FeatureLayer, GroupLayer, MapView, SceneView, AttachmentsContentElement, Search, watchUtils, Home, Zoom, Compass, Locate, Legend, BasemapToggle, LayerList, QueryTask, Query, query, declare, request, CalciteMaps, CalciteMapsArcGIS, on, dom) {
+], function(Map, Basemap, Graphic, FeatureLayer, GroupLayer, MapView, SceneView, AttachmentsContent, RelationshipQuery, Search, watchUtils, Home, Zoom, Compass, Locate, Legend, BasemapToggle, LayerList, QueryTask, Query, query, declare, request, CalciteMaps, CalciteMapsArcGIS, on, dom) {
 
     // App
     app = {
@@ -503,6 +510,11 @@ require([
         view: app.activeView
     });
 
+    var photoAction = {
+            title: "Photos",
+            id: "photo-gallery",
+            className: "esri-icon-media"
+        };
 
 
 
@@ -629,64 +641,92 @@ require([
 
     }
 
-    geoSitesContent = function(value, key, data) {
+    geoSitesContent = function(feature) {
         var content = "";
 
-        if (key === "Picture") {
-            if (data.Picture) {
-                content += "<span class='bold' title='Photo'></span>" + "<a href='" + data.Picture + "' data-lightbox='photo1' target='_blank'> <img src='" + data.Picture + "' width='150' height='100'></a><br>";
+
+            if (feature.graphic.attributes.Picture) {
+                content += "<span class='bold' title='Photo'></span>" + "<a href='{Picture}' data-lightbox='photo1' target='_blank'> <img src='{Picture}' width='150' height='100'></a><br>";
             }
+        
+
+        if (feature.graphic.attributes.Name) {
+            content += "<span class='bold' title='Name'></span><b>{Name}</b><br>";
         }
 
-        if (key === "Name") {
-            content += "<span class='bold' title='Name'></span><b>" + data.Name + "</b><br>";
-        }
 
-        if (key === "Description") {
-            if (data.Description) {
-                content += "<br><span class='bold' title='Description'><b>Description: </b></span>" + data.Description + "<br>";
+            if (feature.graphic.attributes.Description) {
+                content += "<br><span class='bold' title='Description'><b>Description: </b></span>{Description}<br>";
             }
-        }
+        
 
         return content;
 
     }
 
-    miningContent = function(value, key, data) {
+    miningContent = function(feature) {
         var content = "";
 
-        if (key === "District") {
-            if (data.District) {
-                content += "<span class='bold' title='District'></span>" + data.District + " Mining District</b><br>";
+
+            // if (feature.graphic.attributes.District) {
+            //     content += "<span class='bold' title='District'></span><b>{District} Mining District</b><br>";
+            // }
+        
+
+            if (feature.graphic.attributes.Commodity) {
+                content += "<span class='bold' title='Commodity'><b>Commodity: </b></span>{Commodity}</b><br>";
             }
-        }
-        if (key === "Commodity") {
-            if (data.Commodity) {
-                content += "<span class='bold' title='Commodity'><b>Commodity: </b></span>" + data.Commodity + "</b><br>";
+        
+
+            if (feature.graphic.attributes.Organized) {
+                content += "<span class='bold' title='Organized'><b>Organized: </b></span>{Organized}</b><br>";
             }
-        }
-        if (key === "Organized") {
-            if (data.Organized) {
-                content += "<span class='bold' title='Organized'><b>Organized: </b></span>" + data.Organized + "</b><br>";
+        
+
+            if (feature.graphic.attributes.Productive) {
+                content += "<span class='bold' title='Productive'><b>Productive: </b></span>{Productive}</b><br>";
             }
-        }
-        if (key === "Productive") {
-            if (data.Productive) {
-                content += "<span class='bold' title='Productive'><b>Productive: </b></span>" + data.Productive + "</b><br>";
+        
+            if (feature.graphic.attributes.Short_Tons) {
+                content += "<span class='bold' title='Short Tons'><b>Short Tons: </b></span>{Short_Tons}</b><br>";
             }
-        }
-        if (key === "Short_Tons") {
-            if (data.Short_Tons) {
-                content += "<span class='bold' title='Short Tons'><b>Short Tons: </b></span>" + data.Short_Tons + "</b><br>";
-            }
-        }
-        if (key === "Total_Dollar_Value") {
-            if (data.Total_Dollar_Value) {
-                content += "<span class='bold' title='Total Dollar Value'><b>Total Dollar Value: </b></span>" + data.Total_Dollar_Value.toLocaleString('en-US', {
+        
+
+            if (feature.graphic.attributes.Total_Dollar_Value) {
+                var TDV = feature.graphic.attributes.Total_Dollar_Value;
+                content += "<span class='bold' title='Total Dollar Value'><b>Total Dollar Value: </b></span>" + TDV.toLocaleString('en-US', {
                     style: 'currency',
                     currency: 'USD',
                 }) + "</b><br>*data current through 2017";
             }
+        
+
+
+        return content;
+
+    }
+
+    industrialMinContent = function(feature) {
+        var content = "";
+
+
+        if (feature.graphic.attributes.AGE) {
+                content += "<span class='bold' title='Age'><b>Age: </b></span>{AGE}</b><br>";
+        }
+
+            if (feature.graphic.attributes.UNITNAME) {
+                content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>{UNITNAME}</b><br>";
+            }
+        
+
+        if (feature.graphic.attributes.Commodity) {
+            if (feature.graphic.attributes.Commodity == "Gypsum") {
+                content += "<br><span class='bold' title='Show complete report for {Commodity}'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Gypsum.pdf' target='_blank'><b>Layer Information</b></a>";
+            } else if (feature.graphic.attributes.Commodity == "Dolomite") {
+                content += "<br><span class='bold' title='Show complete report for {Commodity}'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Dolomite.pdf' target='_blank'><b>Layer Information</b></a>";
+            } else if (feature.graphic.attributes.Commodity == "Limestone") {
+                content += "<br><span class='bold' title='Show complete report for {Commodity}'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Limestone.pdf' target='_blank'><b>Layer Information</b></a>";
+            }
         }
 
 
@@ -694,106 +734,74 @@ require([
 
     }
 
-    industrialMinContent = function(value, key, data) {
+    bentMinContent = function(feature) {
         var content = "";
 
-
-        if (key === "AGE") {
-            if (data.AGE) {
-                content += "<span class='bold' title='Age'><b>Age: </b></span>" + data.AGE + "</b><br>";
+       
+            if (feature.graphic.attributes.Age) {
+                content += "<span class='bold' title='Age'><b>Age: </b></span>{Age}</b><br>";
             }
-        }
-        if (key === "UNITNAME") {
-            if (data.UNITNAME) {
-                content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>" + data.UNITNAME + "</b><br>";
+        
+        
+            if (feature.graphic.attributes.UnitName) {
+                content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>{UnitName}</b><br>";
             }
-        }
+        
 
-        if (key === "Commodity") {
-            if (data.Commodity == "Gypsum") {
-                content += "<br><span class='bold' title='Show complete report for " + data.Commodity + "'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Gypsum.pdf' target='_blank'><b>Layer Information</b></a>";
-            } else if (data.Commodity == "Dolomite") {
-                content += "<br><span class='bold' title='Show complete report for " + data.Commodity + "'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Dolomite.pdf' target='_blank'><b>Layer Information</b></a>";
-            } else if (data.Commodity == "Limestone") {
-                content += "<br><span class='bold' title='Show complete report for " + data.Commodity + "'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Limestone.pdf' target='_blank'><b>Layer Information</b></a>";
+        
+            if (feature.graphic.attributes.Commodity) {
+                content += "<br><span class='bold' title='Show complete report for {Commodity}'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Bentonite.pdf' target='_blank'><b>Layer Information</b></a><br>";
             }
-        }
-
-
-        return content;
-
-    }
-
-    bentMinContent = function(value, key, data) {
-        var content = "";
-
-        if (key === "Age") {
-            if (data.Age) {
-                content += "<span class='bold' title='Age'><b>Age: </b></span>" + data.Age + "</b><br>";
-            }
-        }
-        if (key === "UnitName") {
-            if (data.UnitName) {
-                content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>" + data.UnitName + "</b><br>";
-            }
-        }
-
-        if (key === "Commodity") {
-            if (data.Commodity) {
-                content += "<br><span class='bold' title='Show complete report for " + data.Commodity + "'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Bentonite.pdf' target='_blank'><b>Layer Information</b></a><br>";
-            }
-        }
+        
 
 
         return content;
 
     }
     
-    silicaContent = function(value, key, data) {
+    silicaContent = function(feature) {
         var content = "";
 
-        if (key === "Age") {
-            if (data.Age) {
-                content += "<span class='bold' title='Age'><b>Age: </b></span>" + data.Age + "</b><br>";
+        if (feature.graphic.attributes.Age) {
+                content += "<span class='bold' title='Age'><b>Age: </b></span>{Age}</b><br>";
             }
-        }
-        if (key === "UnitName") {
-            if (data.UnitName) {
-                content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>" + data.UnitName + "</b><br>";
+        
+        
+            if (feature.graphic.attributes.UnitName) {
+                content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>{UnitName}</b><br>";
             }
-        }
 
-        if (key === "res_pot_rank") {
-            if (data.res_pot_rank) {
+      
+            if (feature.graphic.attributes.res_pot_rank) {
                 content += "<br><span class='bold' title='Show complete report for Silica'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Silica.pdf' target='_blank'><b>Layer Information</b></a><br>";
             }
-        }
+        
 
 
         return content;
 
     }
 
-    let attachmentsElement = new AttachmentsContentElement({
+    let attachmentsElement = new AttachmentsContent({
         displayType: "list"
     });
 
-    wsaContent = function(value, key, data) {
+    wsaContent = function(feature) {
         var content = "";
 
-        if (key === "wsa") {
-            if (data.wsa) {
-                content += "<span class='bold' title='Age'><b>WSA: </b></span>" + data.wsa + "</b><br>";
+       
+            if (feature.graphic.attributes.wsa) {
+                content += "<span class='bold' title='Age'><b>WSA: </b></span>{wsa}</b><br>";
             }
-        }
+        
 
 
 
-        if (key === "url") {
-             if (data.url) {
-                 content += "<br><span class='bold' title='Download Mineral Land Assessment for Wilderness Study Area'></span>" + "<a href='" + data.url + "' target='_blank'><b>Download Mineral Land Assessment for Wilderness Study Area</b></a><br>";
+      
+             if (feature.graphic.attributes.url) {
+                 content += "<br><span class='bold' title='Download Mineral Land Assessment for Wilderness Study Area'></span>" + "<a href='{url}' target='_blank'><b>Download Mineral Land Assessment for Wilderness Study Area</b></a><br>";
             }
-         }
+         
 
 
         return content;
@@ -863,14 +871,9 @@ require([
         outFields: ["*"],
         opacity: 0.5,
         popupTemplate: {
-            title: "<b>{District:miningContent}</b>",
-            content: [{
-                type: "text",
-                text: "{Commodity:miningContent}{Organized:miningContent}{Productive:miningContent}{Short_Tons:miningContent}{Total_Dollar_Value:miningContent}"
-            }, {
-                type: "attachments"
-
-            }]
+            title: "<b>{District} Mining District</b>",
+            content: miningContent,
+            actions: [photoAction]
 
         },
         visible: true,
@@ -884,7 +887,7 @@ require([
 
         popupTemplate: {
             title: "<b>U.S. Bureau of Mines Wilderness Study Area (WSA) Mineral Land Assessment</b>",
-            content: "{wsa:wsaContent}{file:wsaContent}{url:wsaContent}"
+            content: wsaContent
 
         },
         visible: false,
@@ -898,7 +901,7 @@ require([
 
         popupTemplate: {
             title: "<b>Silica Potential</b>",
-            content: "{Age:silicaContent}{UnitName:silicaContent}{res_pot_rank:silicaContent}"
+            content: silicaContent
 
         },
         visible: false,
@@ -912,7 +915,7 @@ require([
 
         popupTemplate: {
             title: "<b>Bentonite Potential</b>",
-            content: "{Age:bentMinContent}{UnitName:bentMinContent}{Commodity:bentMinContent}"
+            content: bentMinContent
 
         },
         visible: false,
@@ -926,7 +929,7 @@ require([
 
         popupTemplate: {
             title: "<b>Dolomite Potential</b>",
-            content: "{AGE:industrialMinContent}{UNITNAME:industrialMinContent}{Commodity:industrialMinContent}"
+            content: industrialMinContent
         },
         visible: false,
     });
@@ -939,7 +942,7 @@ require([
 
         popupTemplate: {
             title: "<b>Gypsum Potential</b>",
-            content: "{AGE:industrialMinContent}{UNITNAME:industrialMinContent}{Commodity:industrialMinContent}"
+            content: industrialMinContent
         },
         visible: false,
     });
@@ -952,7 +955,7 @@ require([
 
         popupTemplate: {
             title: "<b>Limestone Potential</b>",
-            content: "{AGE:industrialMinContent}{UNITNAME:industrialMinContent}{Commodity:industrialMinContent}"
+            content: industrialMinContent
         },
         visible: false,
     });
@@ -1031,9 +1034,138 @@ require([
     app.activeView.map.add(miningDistricts);
 
     app.activeView.map.add(industrialMins);
+
+
+    app.activeView.popup.on("trigger-action", function(event) {
+            // Execute the photoGallery() function if the photo action is clicked
+            if (event.action.id === "photo-gallery") {
+                photoGallery();
+            }
+        });
+
+        console.log(app.activeView)
+
+// //photos action code
+watchUtils.when(app.activeView.popup, "selectedFeature", function(evt) {
+    console.log(evt);
+
+query("#panelInfo").removeClass("in");
+query("#panelDetails").removeClass("in");
+query("#panelInventory").removeClass("in");
+//console.log(app.activeView.popup.actions);
+//app.activeView.popup.actions.splice(1, 2);
+
+
+objectID = evt.attributes.OBJECTID;
+console.log(objectID);
+//query the well layer
+var queryTask = new QueryTask({
+    url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/7"
+});
+//query the well layers related table for photos
+relationQuery = new RelationshipQuery({
+    objectIds: [objectID],
+    outFields: ["URL", "Photo_Label", "Locality", "Mineral", "Mineral_District"],
+    returnGeometry: true,
+    relationshipId: 0,
+    where: "1=1"
+});
+//console.log(relationQuery);
+
+queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
+    console.log(rslts);
+
+    document.getElementById("attDetails").innerHTML = "";
+    var features = rslts[objectID].features;
+
+    if (features) {
+        //console.log(features);
+        app.activeView.popup.actions.push(corePhotos);
+
+        //adds labels for popup action buttons. for some reason having more than two custom actions removes the labels from all of them
+        setTimeout(labelButtons, 100)
+
+        function labelButtons() {
+            var stringZoom = "Zoom To";
+            var spanZoom = document.createElement("SPAN");
+            spanZoom.className = "esri-popup__action-text";
+            spanZoom.innerHTML = stringZoom;
+            var actionButton = document.querySelectorAll('.esri-popup__feature-buttons .esri-popup__action');
+            var children = actionButton[0].childNodes.length;
+            if (children > 1) {} else {
+                actionButton[0].appendChild(spanZoom);
+            }
+
+
+            var stringPho = "Photos";
+            var spanPho = document.createElement("SPAN");
+            spanPho.className = "esri-popup__action-text";
+            spanPho.innerHTML = stringPho;
+            actionButton[1].appendChild(spanPho);
+
+        }
+
+
+
+    } else {
+        query("#panelDetails").removeClass("in");
+        query("#collapseDetails").removeClass("in");
+    }
+
+    features.forEach(function(ftr) {
+        var t = ftr.attributes;
+        var fileURL = t.URL;
+        //var string = fileURL.substr(3);
+        // var name = t.Filename;
+        // var type = t.Type;
+        // var display = t.Usage;
+        // var tDepth = t.Top_Depth;
+        // var bDepth = t.Bottom_Depth;
+        console.log(string);
+        //if (display == "PUBLIC" && name.match(/.jpg/) || name.match(/.JPG/)) {
+        if (name.match(/.jpg/) || name.match(/.JPG/)) {
+            document.getElementById("attDetails").innerHTML += "<li><img data-original='https://ugspub.nr.utah.gov/publications/core_photos/" + string + "' src='https://ugspub.nr.utah.gov/publications/core_photos/" + string + "'  alt='" + name + " '></li>";
+        }
+    });
+})
+.catch(function (error) {
+  console.log("query task error", error);
+});
+});
+
+
+        // show or hide any open calicite panels when user clicks for attribute details
+        function showHideCalcitePanels(showPanel, showCollapse) {
+            // hide all windows
+            //query(".panel-collapse").query(".panel .in").collapse("hide");   //close any open panels
+            query(".panel.in").removeClass("in"); //close any open panels
+            query(".panel-collapse").removeClass("in");
+
+            // if specified show this calcite panel
+            if (showPanel) {
+                //query(showPanel).query(showCollapse).addClass("in");
+                query(showPanel).collapse("show"); // so I use these instead
+                query(showCollapse).collapse("show");
+            }
+        }
     
 
 
+        function photoGallery() {
+            query("#panelInfo").removeClass("in");
+            var viewer;
+            app.activeView.on('click', function() {
+                viewer.destroy();
+                // -> true
+            }, false);
+
+            showHideCalcitePanels("#panelDetails", "#collapseDetails");
+            viewer = new Viewer(gallery, {
+                url: 'data-original',
+            });
+            console.log(viewer);
+
+        }
 
 
 });
