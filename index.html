@@ -119,6 +119,25 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         .calcite-panels {
             z-index: 1;
         }
+
+        .pictures {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .pictures > li {
+      float: left;
+      width: 33.3%;
+      height: 33.3%;
+      margin: 0 -1px -1px 0;
+      border: 1px solid transparent;
+      overflow: hidden;
+    }
+    .pictures > li > img {
+      width: 100%;
+      cursor: -webkit-zoom-in;
+      cursor: zoom-in;
+    }
     </style>
 
 </head>
@@ -291,7 +310,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div id="panelDetails" class="panel collapse">
             <div id="headingInfo" class="panel-heading" role="tab">
                 <div class="panel-title">
-                    <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseDetails" aria-expanded="true" aria-controls="collapseDetails"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span><span class="panel-label" id="details">All Available Sample Data</span></a>
+                    <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseDetails" aria-expanded="true" aria-controls="collapseDetails"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span><span class="panel-label" id="details">Photos</span></a>
                     <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelDetails"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
                 </div>
             </div>
@@ -866,14 +885,14 @@ require([
     // });
 
     const miningDistricts = new FeatureLayer({
-        url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/7",
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/7",
         title: "Mining Districts",
         outFields: ["*"],
         opacity: 0.5,
         popupTemplate: {
             title: "<b>{District} Mining District</b>",
             content: miningContent,
-            actions: [photoAction]
+            //actions: [photoAction]
 
         },
         visible: true,
@@ -1060,7 +1079,7 @@ objectID = evt.attributes.OBJECTID;
 console.log(objectID);
 //query the well layer
 var queryTask = new QueryTask({
-    url: "https://webmaps.geology.utah.gov/arcgis/rest/services/Energy_Mineral/BLM_Mineral_Resources/MapServer/7"
+    url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/7"
 });
 //query the well layers related table for photos
 relationQuery = new RelationshipQuery({
@@ -1068,9 +1087,9 @@ relationQuery = new RelationshipQuery({
     outFields: ["URL", "Photo_Label", "Locality", "Mineral", "Mineral_District"],
     returnGeometry: true,
     relationshipId: 0,
-    where: "1=1"
+    //where: "1=1"
 });
-//console.log(relationQuery);
+console.log(relationQuery);
 
 queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
     console.log(rslts);
@@ -1078,32 +1097,33 @@ queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
     document.getElementById("attDetails").innerHTML = "";
     var features = rslts[objectID].features;
 
-    if (features) {
-        //console.log(features);
-        app.activeView.popup.actions.push(corePhotos);
+    if (rslts) {
 
-        //adds labels for popup action buttons. for some reason having more than two custom actions removes the labels from all of them
-        setTimeout(labelButtons, 100)
+        console.log("Found Features" + features);
+        app.activeView.popup.actions.push(photoAction);
 
-        function labelButtons() {
-            var stringZoom = "Zoom To";
-            var spanZoom = document.createElement("SPAN");
-            spanZoom.className = "esri-popup__action-text";
-            spanZoom.innerHTML = stringZoom;
-            var actionButton = document.querySelectorAll('.esri-popup__feature-buttons .esri-popup__action');
-            var children = actionButton[0].childNodes.length;
-            if (children > 1) {} else {
-                actionButton[0].appendChild(spanZoom);
-            }
+        // //adds labels for popup action buttons. for some reason having more than two custom actions removes the labels from all of them
+        // setTimeout(labelButtons, 100)
+
+        // function labelButtons() {
+        //     var stringZoom = "Zoom To";
+        //     var spanZoom = document.createElement("SPAN");
+        //     spanZoom.className = "esri-popup__action-text";
+        //     spanZoom.innerHTML = stringZoom;
+        //     var actionButton = document.querySelectorAll('.esri-popup__feature-buttons .esri-popup__action');
+        //     var children = actionButton[0].childNodes.length;
+        //     if (children > 1) {} else {
+        //         actionButton[0].appendChild(spanZoom);
+        //     }
 
 
-            var stringPho = "Photos";
-            var spanPho = document.createElement("SPAN");
-            spanPho.className = "esri-popup__action-text";
-            spanPho.innerHTML = stringPho;
-            actionButton[1].appendChild(spanPho);
+        //     var stringPho = "Photos";
+        //     var spanPho = document.createElement("SPAN");
+        //     spanPho.className = "esri-popup__action-text";
+        //     spanPho.innerHTML = stringPho;
+        //     actionButton[1].appendChild(spanPho);
 
-        }
+        // }
 
 
 
@@ -1116,15 +1136,17 @@ queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
         var t = ftr.attributes;
         var fileURL = t.URL;
         //var string = fileURL.substr(3);
-        // var name = t.Filename;
+        var name = t.Photo_Label;
         // var type = t.Type;
         // var display = t.Usage;
         // var tDepth = t.Top_Depth;
         // var bDepth = t.Bottom_Depth;
-        console.log(string);
+        //console.log(fileURL);
+        var newURL = fileURL.replace(/\\/g, "/");
+        console.log(newURL);
         //if (display == "PUBLIC" && name.match(/.jpg/) || name.match(/.JPG/)) {
-        if (name.match(/.jpg/) || name.match(/.JPG/)) {
-            document.getElementById("attDetails").innerHTML += "<li><img data-original='https://ugspub.nr.utah.gov/publications/core_photos/" + string + "' src='https://ugspub.nr.utah.gov/publications/core_photos/" + string + "'  alt='" + name + " '></li>";
+        if (newURL.match(/.jpg/) || newURL.match(/.JPG/)) {
+            document.getElementById("attDetails").innerHTML += "<li><img data-original='https://geology.utah.gov/apps/" + newURL + "' src='https://geology.utah.gov/apps/" + newURL + "'  alt='" + name + " '></li>";
         }
     });
 })
@@ -1152,6 +1174,7 @@ queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
 
 
         function photoGallery() {
+
             query("#panelInfo").removeClass("in");
             var viewer;
             app.activeView.on('click', function() {
