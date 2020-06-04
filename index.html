@@ -803,36 +803,27 @@ require([
     silicaContent = function(feature) {
         console.log(feature);
 
-        var silContent = "";
-        var attachmentsElement = "";
+        var content = "";
 
-        var attachmentsElement = new AttachmentsContent({
-                displayType: "list"
-            });
-
-        var silContent = new TextContent();
-        var age = feature.graphic.attributes.Age;
-        var unitName = feature.graphic.attributes.UnitName;
-        var resPot = feature.graphic.attributes.res_pot_rank;
 
 
 
          
 
-        if (age) {
-                silContent.text = "<span class='bold' title='Age'><b>Age: </b></span>" + age + "</b><br>";
+        if (feature.graphic.attributes.Age) {
+                content += "<span class='bold' title='Age'><b>Age: </b></span>{Age}</b><br>";
             }
         
         
-            if (unitName) {
-                silContent.text += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>" + unitName + "</b><br>";
+            if (feature.graphic.attributes.UnitName) {
+                content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>{UnitName}</b><br>";
             }
 
       
-            if (resPot) {
-                silContent.text += "<br><span class='bold' title='Show complete report for Silica'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Silica.pdf' target='_blank'><b>Layer Information</b></a><br>";
+            if (feature.graphic.attributes.res_pot_rank) {
+                content += "<br><span class='bold' title='Show complete report for Silica'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Silica.pdf' target='_blank'><b>Layer Information</b></a><br>";
             }
-            return [silContent, attachmentsElement];
+            return content;
 
     }
 
