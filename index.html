@@ -1089,7 +1089,7 @@ var queryTask = new QueryTask({
 //query the well layers related table for photos
 relationQuery = new RelationshipQuery({
     objectIds: [objectID],
-    outFields: ["URL", "Photo_Label", "Locality", "Mineral", "Mineral_District"],
+    outFields: ["URL", "Photo_Label", "Locality", "Mineral", "mining_district"],
     returnGeometry: true,
     relationshipId: 0,
     //where: "1=1"
@@ -1139,7 +1139,7 @@ queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
 
     features.forEach(function(ftr) {
         var t = ftr.attributes;
-        var fileURL = t.URL;
+        var newURL = t.URL;
         //var string = fileURL.substr(3);
         var name = t.Photo_Label;
         // var type = t.Type;
@@ -1147,7 +1147,7 @@ queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
         // var tDepth = t.Top_Depth;
         // var bDepth = t.Bottom_Depth;
         //console.log(fileURL);
-        var newURL = fileURL.replace(/\\/g, "/");
+        //var newURL = fileURL.replace(/\\/g, "/");
         //console.log(newURL);
         //if (display == "PUBLIC" && name.match(/.jpg/) || name.match(/.JPG/)) {
         if (newURL.match(/.jpg/) || newURL.match(/.JPG/)) {
