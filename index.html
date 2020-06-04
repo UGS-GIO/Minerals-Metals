@@ -383,6 +383,7 @@ require([
     "esri/layers/GroupLayer",
     "esri/views/MapView",
     "esri/views/SceneView",
+    "esri/popup/content/TextContent",
     "esri/popup/content/AttachmentsContent",
     "esri/tasks/support/RelationshipQuery",
     "esri/widgets/Search",
@@ -411,7 +412,7 @@ require([
     "dojo/dom-construct",
     "dojo/domReady!"
 
-], function(Map, Basemap, Graphic, FeatureLayer, GroupLayer, MapView, SceneView, AttachmentsContent, RelationshipQuery, Search, watchUtils, Home, Zoom, Compass, Locate, Legend, BasemapToggle, LayerList, QueryTask, Query, query, declare, request, CalciteMaps, CalciteMapsArcGIS, on, dom) {
+], function(Map, Basemap, Graphic, FeatureLayer, GroupLayer, MapView, SceneView, TextContent, AttachmentsContent, RelationshipQuery, Search, watchUtils, Home, Zoom, Compass, Locate, Legend, BasemapToggle, LayerList, QueryTask, Query, query, declare, request, CalciteMaps, CalciteMapsArcGIS, on, dom) {
 
     // App
     app = {
@@ -547,7 +548,7 @@ require([
         view: app.activeView,
         container: "legendDiv",
         listItemCreatedFunction: function(event) {
-            const item = event.item;
+            var item = event.item;
             setTimeout(function() {  //function to change tooltips for each layer in layerlist
             var eyeArr = query('.esri-layer-list__item-toggle');
             var titleArr = query('.esri-layer-list__item-title');
@@ -689,7 +690,20 @@ require([
     }
 
     miningContent = function(feature) {
+
         var content = "";
+        var attachmentsElement = "";
+
+        var attachmentsElement = new AttachmentsContent({
+                displayType: "list"
+            });
+
+        var content = new TextContent();
+        var commodity = feature.graphic.attributes.Commodity;
+        var organized = feature.graphic.attributes.Organized;
+        var productive = feature.graphic.attributes.Productive;
+        var shortTons = feature.graphic.attributes.Short_Tons;
+        var totalDollar = feature.graphic.attributes.Total_Dollar_Value;
 
 
             // if (feature.graphic.attributes.District) {
@@ -697,36 +711,39 @@ require([
             // }
         
 
-            if (feature.graphic.attributes.Commodity) {
-                content += "<span class='bold' title='Commodity'><b>Commodity: </b></span>{Commodity}</b><br>";
+            if (commodity) {
+                content.text =  "<span class='bold' title='Commodity'><b>Commodity: </b></span>" + commodity + "</b><br>";
             }
         
 
-            if (feature.graphic.attributes.Organized) {
-                content += "<span class='bold' title='Organized'><b>Organized: </b></span>{Organized}</b><br>";
+            if (organized) {
+                content.text += "<span class='bold' title='Organized'><b>Organized: </b></span>" + organized + "</b><br>";
             }
         
 
-            if (feature.graphic.attributes.Productive) {
-                content += "<span class='bold' title='Productive'><b>Productive: </b></span>{Productive}</b><br>";
+            if (productive) {
+                content.text += "<span class='bold' title='Productive'><b>Productive: </b></span>" + productive + "</b><br>";
             }
         
-            if (feature.graphic.attributes.Short_Tons) {
-                content += "<span class='bold' title='Short Tons'><b>Short Tons: </b></span>{Short_Tons}</b><br>";
+            if (shortTons) {
+                content.text += "<span class='bold' title='Short Tons'><b>Short Tons: </b></span>" + shortTons + "</b><br>";
             }
         
 
-            if (feature.graphic.attributes.Total_Dollar_Value) {
-                var TDV = feature.graphic.attributes.Total_Dollar_Value;
-                content += "<span class='bold' title='Total Dollar Value'><b>Total Dollar Value: </b></span>" + TDV.toLocaleString('en-US', {
+            if (totalDollar) {
+                
+                content.text += "<span class='bold' title='Total Dollar Value'><b>Total Dollar Value: </b></span>" + totalDollar.toLocaleString('en-US', {
                     style: 'currency',
                     currency: 'USD',
                 }) + "</b><br>*data current through 2017";
             }
-        
+
+            console.log(content);
 
 
-        return content;
+
+            return [content, attachmentsElement];
+
 
     }
 
@@ -784,31 +801,42 @@ require([
     }
     
     silicaContent = function(feature) {
-        var content = "";
+        console.log(feature);
 
-        if (feature.graphic.attributes.Age) {
-                content += "<span class='bold' title='Age'><b>Age: </b></span>{Age}</b><br>";
+        var silContent = "";
+        var attachmentsElement = "";
+
+        var attachmentsElement = new AttachmentsContent({
+                displayType: "list"
+            });
+
+        var silContent = new TextContent();
+        var age = feature.graphic.attributes.Age;
+        var unitName = feature.graphic.attributes.UnitName;
+        var resPot = feature.graphic.attributes.res_pot_rank;
+
+
+
+         
+
+        if (age) {
+                silContent.text = "<span class='bold' title='Age'><b>Age: </b></span>" + age + "</b><br>";
             }
         
         
-            if (feature.graphic.attributes.UnitName) {
-                content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>{UnitName}</b><br>";
+            if (unitName) {
+                silContent.text += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>" + unitName + "</b><br>";
             }
 
       
-            if (feature.graphic.attributes.res_pot_rank) {
-                content += "<br><span class='bold' title='Show complete report for Silica'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Silica.pdf' target='_blank'><b>Layer Information</b></a><br>";
+            if (resPot) {
+                silContent.text += "<br><span class='bold' title='Show complete report for Silica'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Silica.pdf' target='_blank'><b>Layer Information</b></a><br>";
             }
-        
-
-
-        return content;
+            return [silContent, attachmentsElement];
 
     }
 
-    let attachmentsElement = new AttachmentsContent({
-        displayType: "list"
-    });
+
 
     wsaContent = function(feature) {
         var content = "";
