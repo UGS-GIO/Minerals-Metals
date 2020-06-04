@@ -138,6 +138,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       cursor: -webkit-zoom-in;
       cursor: zoom-in;
     }
+
+    .viewer-title {
+        color: #cd4;
+        font-size: 20px;
+    }
     </style>
 
 </head>
@@ -1062,21 +1067,21 @@ require([
             }
         });
 
-        console.log(app.activeView)
+        //console.log(app.activeView)
 
 // //photos action code
 watchUtils.when(app.activeView.popup, "selectedFeature", function(evt) {
-    console.log(evt);
+    //console.log(evt);
 
 query("#panelInfo").removeClass("in");
 query("#panelDetails").removeClass("in");
 query("#panelInventory").removeClass("in");
 //console.log(app.activeView.popup.actions);
-//app.activeView.popup.actions.splice(1, 2);
+app.activeView.popup.actions.splice(1, 2);
 
 
 objectID = evt.attributes.OBJECTID;
-console.log(objectID);
+//console.log(objectID);
 //query the well layer
 var queryTask = new QueryTask({
     url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/7"
@@ -1089,17 +1094,17 @@ relationQuery = new RelationshipQuery({
     relationshipId: 0,
     //where: "1=1"
 });
-console.log(relationQuery);
+//console.log(relationQuery);
 
 queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
-    console.log(rslts);
+    //console.log(rslts);
 
     document.getElementById("attDetails").innerHTML = "";
     var features = rslts[objectID].features;
 
     if (rslts) {
 
-        console.log("Found Features" + features);
+        //console.log("Found Features" + features);
         app.activeView.popup.actions.push(photoAction);
 
         // //adds labels for popup action buttons. for some reason having more than two custom actions removes the labels from all of them
@@ -1143,7 +1148,7 @@ queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
         // var bDepth = t.Bottom_Depth;
         //console.log(fileURL);
         var newURL = fileURL.replace(/\\/g, "/");
-        console.log(newURL);
+        //console.log(newURL);
         //if (display == "PUBLIC" && name.match(/.jpg/) || name.match(/.JPG/)) {
         if (newURL.match(/.jpg/) || newURL.match(/.JPG/)) {
             document.getElementById("attDetails").innerHTML += "<li><img data-original='https://geology.utah.gov/apps/" + newURL + "' src='https://geology.utah.gov/apps/" + newURL + "'  alt='" + name + " '></li>";
@@ -1151,7 +1156,7 @@ queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
     });
 })
 .catch(function (error) {
-  console.log("query task error", error);
+  //console.log("query task error", error);
 });
 });
 
@@ -1186,7 +1191,7 @@ queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
             viewer = new Viewer(gallery, {
                 url: 'data-original',
             });
-            console.log(viewer);
+            //console.log(viewer);
 
         }
 
