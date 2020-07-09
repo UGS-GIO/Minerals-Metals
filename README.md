@@ -5,7 +5,7 @@ Project Manager:
 Marshall Robinson
 
 Product Manager:
-Andrew Rupke
+Stephanie  Mills & Andrew Rupke
 
 Data Manager:
 Martha Jensen
