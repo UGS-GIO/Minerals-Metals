@@ -1046,13 +1046,71 @@ require([
         }
     };
 
+    var adminRenderer = {
+  type: "unique-value",  // autocasts as new UniqueValueRenderer()
+  field: "AGENCY",
+  defaultSymbol: { type: "simple-fill" },  // autocasts as new SimpleFillSymbol()
+  uniqueValueInfos: [{
+    // All features with value of "North" will be blue
+    value: "BLM",
+    symbol: {
+      type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+      color: "#FEE679"
+    }
+  }, {
+    // All features with value of "East" will be green
+    value: "SITLA",
+    symbol: {
+      type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+      color: "#73B2FF"
+    }
+  }, {
+    // All features with value of "South" will be red
+    value: "NPS",
+    symbol: {
+      type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+      color: "#89CD66"
+    }
+  }, {
+    // All features with value of "West" will be yellow
+    value: "DNR",
+    symbol: {
+      type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+      color: "#267300"
+    }
+  }, {
+    // All features with value of "West" will be yellow
+    value: "DOD",
+    symbol: {
+      type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+      color: "#AAAAAA"
+    }
+  }, {
+    // All features with value of "West" will be yellow
+    value: "USFS",
+    symbol: {
+      type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+      color: "#89CD66"
+    }
+  }, {
+    // All features with value of "West" will be yellow
+    value: "Tribal",
+    symbol: {
+      type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+      color: "#FDB46C"
+    }
+  }],
+
+};
+
     const adminBounds = new FeatureLayer({
-        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/12",
+        url: "https://gis.trustlands.utah.gov/server/rest/services/Ownership/UT_SITLA_Ownership_LandOwnership/FeatureServer",
         title: "Land Ownership",
         outFields: ["*"],
         legendEnabled: true,
-        opacity: 0.15,
+        opacity: 0.25,
         visible: true,
+        renderer: adminRenderer,
         //labelingInfo: [adminlabelClass],
 
     });
