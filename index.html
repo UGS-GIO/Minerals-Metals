@@ -378,6 +378,7 @@ var app;
 require([
     "esri/Map",
     "esri/Basemap",
+    "esri/portal/Portal",
     "esri/Graphic",
     "esri/layers/FeatureLayer",
     "esri/layers/GroupLayer",
@@ -412,13 +413,13 @@ require([
     "dojo/dom-construct",
     "dojo/domReady!"
 
-], function(Map, Basemap, Graphic, FeatureLayer, GroupLayer, MapView, SceneView, TextContent, AttachmentsContent, RelationshipQuery, Search, watchUtils, Home, Zoom, Compass, Locate, Legend, BasemapToggle, LayerList, QueryTask, Query, query, declare, request, CalciteMaps, CalciteMapsArcGIS, on, dom) {
+], function(Map, Basemap, Portal, Graphic, FeatureLayer, GroupLayer, MapView, SceneView, TextContent, AttachmentsContent, RelationshipQuery, Search, watchUtils, Home, Zoom, Compass, Locate, Legend, BasemapToggle, LayerList, QueryTask, Query, query, declare, request, CalciteMaps, CalciteMapsArcGIS, on, dom) {
 
     // App
     app = {
         zoom: 8,
         center: [-112, 39.5],
-        basemap: "topo",
+        basemap: "terrain",
         viewPadding: {
             top: 50,
             bottom: 0
@@ -933,12 +934,53 @@ require([
     //     visible: false,
     // });
 
+    var minedistrictRenderer = {
+  type: "simple",  // autocasts as new UniqueValueRenderer()
+  symbol: { type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+      color: "#ffcc80",
+      outline: {
+    width: 1,
+    color: "#ff9900"
+    }, },  // autocasts as new SimpleFillSymbol()
+//   uniqueValueInfos: [{
+//     // All features with value of "North" will be blue
+//     value: "North",
+//     symbol: {
+//       type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+//       color: "blue"
+//     }
+//   }, {
+//     // All features with value of "East" will be green
+//     value: "East",
+//     symbol: {
+//       type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+//       color: "green"
+//     }
+//   }, {
+//     // All features with value of "South" will be red
+//     value: "South",
+//     symbol: {
+//       type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+//       color: "red"
+//     }
+//   }, {
+//     // All features with value of "West" will be yellow
+//     value: "West",
+//     symbol: {
+//       type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+//       color: "yellow"
+//     }
+//   }],
+
+};
+
     const miningDistricts = new FeatureLayer({
         url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/7",
-        title: "Mining Districts",
+        title: "Metalliferous Mining Districts",
         outFields: ["*"],
         opacity: 0.5,
         popupTemplate: template,
+        renderer: minedistrictRenderer,
         visible: true,
     });
 
@@ -1049,55 +1091,83 @@ require([
     var adminRenderer = {
   type: "unique-value",  // autocasts as new UniqueValueRenderer()
   field: "AGENCY",
-  defaultSymbol: { type: "simple-fill" },  // autocasts as new SimpleFillSymbol()
+  //defaultSymbol: { type: "simple-fill" },  // autocasts as new SimpleFillSymbol()
   uniqueValueInfos: [{
     // All features with value of "North" will be blue
     value: "BLM",
     symbol: {
       type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-      color: "#FEE679"
-    }
+      color: "#FEE679",
+      outline: {
+    width: 0,
+    color: "gray"
+    },
+}
   }, {
     // All features with value of "East" will be green
     value: "SITLA",
     symbol: {
       type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-      color: "#73B2FF"
-    }
+      color: "#73B2FF",
+      outline: {
+    width: 0,
+    color: "gray"
+    },
+}
   }, {
     // All features with value of "South" will be red
     value: "NPS",
     symbol: {
       type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-      color: "#89CD66"
+      color: "#89CD66",
+      outline: {
+    width: 0,
+    color: "gray"
     }
+}
   }, {
     // All features with value of "West" will be yellow
     value: "DNR",
     symbol: {
       type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-      color: "#267300"
+      color: "#267300",
+      outline: {
+    width: 0,
+    color: "gray"
     }
+}
   }, {
     // All features with value of "West" will be yellow
     value: "DOD",
     symbol: {
       type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-      color: "#AAAAAA"
+      color: "#AAAAAA",
+      outline: {
+    width: 0,
+    color: "gray"
     }
+}
   }, {
     // All features with value of "West" will be yellow
     value: "USFS",
     symbol: {
       type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-      color: "#89CD66"
+      color: "#89CD66",
+      outline: {
+    width: 0,
+    color: "gray"
     }
+}
   }, {
     // All features with value of "West" will be yellow
     value: "Tribal",
     symbol: {
       type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-      color: "#FDB46C"
+      color: "#FDB46C",
+      outline: {
+    width: 0,
+    color: "gray"
+  }
     }
   }],
 
@@ -1108,7 +1178,7 @@ require([
         title: "Land Ownership",
         outFields: ["*"],
         legendEnabled: true,
-        opacity: 0.25,
+        opacity: 0.15,
         visible: true,
         renderer: adminRenderer,
         //labelingInfo: [adminlabelClass],
