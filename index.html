@@ -975,7 +975,7 @@ require([
 };
 
     const miningDistricts = new FeatureLayer({
-        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/7",
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/6",
         title: "Metalliferous Mining Districts",
         outFields: ["*"],
         opacity: 0.5,
@@ -985,7 +985,7 @@ require([
     });
 
     const mineralLandAssessments = new FeatureLayer({
-        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/13",
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/11",
         title: "WSA Mineral Land Assessment",
         opacity: 0.5,
         outFields: ["*"],
@@ -999,7 +999,7 @@ require([
     });
 
     const silica = new FeatureLayer({
-        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/5",
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/5",
         title: "Silica",
         opacity: 0.5,
         outFields: ["*"],
@@ -1013,7 +1013,7 @@ require([
     });
 
     const bentonite = new FeatureLayer({
-        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/1",
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/1",
         title: "Bentonite",
         opacity: 0.5,
         outFields: ["*"],
@@ -1027,7 +1027,7 @@ require([
     });
 
     const dolomite = new FeatureLayer({
-        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/2",
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/2",
         title: "Dolomite",
         outFields: ["*"],
         opacity: 0.5,
@@ -1040,7 +1040,7 @@ require([
     });
 
     const gypsum = new FeatureLayer({
-        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/3",
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/3",
         title: "Gypsum",
         outFields: ["*"],
         opacity: 0.5,
@@ -1053,7 +1053,7 @@ require([
     });
 
     const limestone = new FeatureLayer({
-        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/4",
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/4",
         title: "Limestone",
         outFields: ["*"],
         opacity: 0.5,
@@ -1203,7 +1203,7 @@ require([
     };
 
     const countyLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/11",
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/10",
         popupEnabled: false,
         name: "Counties",
         title: "Counties",
@@ -1251,7 +1251,7 @@ objectID = evt.attributes.OBJECTID;
 //console.log(objectID);
 //query the well layer
 var queryTask = new QueryTask({
-    url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/BLM_Mineral_Resources_web_View/FeatureServer/7"
+    url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/6"
 });
 //query the well layers related table for photos
 relationQuery = new RelationshipQuery({
