@@ -36,7 +36,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <!-- works -->
 
     <!-- ArcGIS JS 4.10 -->
-    <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/css/main.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/css/main.css">
     <link rel="stylesheet" href="lightbox2/dist/css/lightbox.min.css">
     <link  href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.5.0/viewer.css" rel="stylesheet">
 
@@ -370,7 +370,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </script>
 
     <!-- ArcGIS JS 4 -->
-    <script src="https://js.arcgis.com/4.15/"></script>
+    <script src="https://js.arcgis.com/4.19/"></script>
 
 
     <script>
@@ -775,7 +775,7 @@ require([
             }
           ],
 
-        },
+        }
 
     industrialMinContent = function(feature) {
         var content = "";
@@ -878,6 +878,171 @@ require([
     }
 
 
+
+
+
+
+    const umosRenderer = {
+          type: "unique-value", // autocasts as new SimpleRenderer()
+          field: "TYPE",
+          uniqueValueInfos: [
+                {
+                  value: "Unspecified",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(78, 78, 78)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5  
+                    }
+                  }
+                },                {
+                  value: "Energy",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(255, 211, 127)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Industrial Mineral",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(225, 225, 225)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Industrial Mineral - Energy",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(214, 157, 188)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Metal",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(158,215,174)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Metal - Energy",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(158,170,215)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Metal - Industrial Mineral",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(102,153,205)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Metal - Industrial Mineral - Energy",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(68,101,137)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+            ],
+            visualVariables: [
+            {
+              type: "size",
+              valueExpression: "$feature.Prod_Value_symbol",
+              valueExpressionTitle: "Poop",
+              stops: [
+                {
+                  value: 0,
+                  size: 6,
+                  label: "None"
+                },
+                {
+                  value: 1,
+                  size: 10,
+                  label: "Small"
+                },
+                {
+                  value: 2,
+                  size: 14,
+                  label: "Medium"
+                },
+                {
+                  value: 3,
+                  size: 18,
+                  label: "Large"
+                }
+              ]
+            },
+            // {
+            //   type: "color",
+            //   field: "Type_Value_symbol",
+            //   stops: [
+            //   { value: 0,
+            //     color: [78,78,78]
+            // }, 
+            // {value: 1,
+            // color: [255, 211, 127]
+            // }, 
+            // {value: 2,
+            // color: [225, 225, 225]
+            // },
+            // {value: 3,
+            // color: [214, 157, 188]
+            // },
+            // {value: 4,
+            // color: [158, 215, 194]
+            // },
+            // {value: 5,
+            // color: [158, 170, 215]
+            // },
+            // {value: 6,
+            // color: [102, 153, 205]
+            // },
+            // {value: 7,
+            // color: [68, 101, 137]
+            // }
+            //   ]
+            // }
+        ]
+    };
+
+
+
+
+
+      
+
     //remove panels when user clicks on map
 
     app.activeView.on("click", function(event) {
@@ -944,6 +1109,36 @@ require([
     }, },  // autocasts as new SimpleFillSymbol()
 
 };
+
+const umos = new FeatureLayer({
+    url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/12",
+    title: "Utah Mineral Occurrence System",
+    outFields: ["*"],
+    renderer: umosRenderer,
+    popupTemplate: {
+        title: "<b>{SITE_NAME}</b>",
+        content: "<span class='bold' title='Commodity'><b>Commodity: </b></span>{COMMODITY}</b><br>" +
+                    "<span class='bold' title='Commodity Type'><b>Commodity Type: </b></span>{TYPE}</b><br>" +
+                    "<span class='bold' title='Production'><b>Production: </b></span>{PRODUCTION}</b><br>" +
+                    "<span class='bold' title='Deposit Size'><b>Deposit Size: </b></span>{DEP_SIZE}</b><br>" +
+                    "<span class='bold' title='Mining District'><b>Mining District: </b></span>{DISTRICT}</b><br>" +
+                    "<span class='bold' title='County'><b>County: </b></span>{COUNTY}</b><br>",
+        fieldInfos: [{
+            fieldName: "COMMODITY",
+            },{
+            fieldName: "TYPE",
+            },{
+            fieldName: "PRODUCTION",
+        },{
+            fieldName: "DEP_SIZE",
+        },{
+            fieldName: "DISTRICT",
+        },{
+            fieldName: "PRODUCTION",
+            }]
+    },
+    visible: true
+})
 
     const miningDistricts = new FeatureLayer({
         url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/6",
@@ -1194,8 +1389,10 @@ require([
     app.activeView.map.add(mineralLandAssessments);
 
     app.activeView.map.add(miningDistricts);
-
+    app.activeView.map.add(umos);
     app.activeView.map.add(industrialMins);
+
+
 
 
     app.activeView.popup.on("trigger-action", function(event) {
