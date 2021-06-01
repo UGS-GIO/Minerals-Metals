@@ -1122,7 +1122,8 @@ const umos = new FeatureLayer({
                     "<span class='bold' title='Production'><b>Production: </b></span>{PRODUCTION}</b><br>" +
                     "<span class='bold' title='Deposit Size'><b>Deposit Size: </b></span>{DEP_SIZE}</b><br>" +
                     "<span class='bold' title='Mining District'><b>Mining District: </b></span>{DISTRICT}</b><br>" +
-                    "<span class='bold' title='County'><b>County: </b></span>{COUNTY}</b><br>",
+                    "<span class='bold' title='County'><b>County: </b></span>{COUNTY}</b><br>" +
+                    "<b><a href='https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS%20Explanation' target='_blank'><span style='color: blue;'> UMOS Explanation</span></a></b>",
         fieldInfos: [{
             fieldName: "COMMODITY",
             },{
@@ -1146,9 +1147,9 @@ const umos = new FeatureLayer({
         outFields: ["*"],
         opacity: 0.5,
         popupTemplate: template,
-        //renderer: minedistrictRenderer,
+        //renderer: minedistrictRenderer, 
         visible: true,
-    });
+    });  
 
     const mineralLandAssessments = new FeatureLayer({
         url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/11",
