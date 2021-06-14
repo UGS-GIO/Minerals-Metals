@@ -250,18 +250,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                         <strong>Layer Information</strong></p>
 
-                        <p><br /><strong>Utah Mineral Occurrence System (UMOS)</strong></p>
-                        <p> <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS2021_05_05.zip" target="_blank"><span style="color: blue;">Utah Mineral Occurrence System data</span></a> <br /></p>
+                        <p><br /><strong>Utah Mineral Occurrence System (UMOS)</strong><a href="https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS2021_05_05.zip" target="_blank"><span style="color: blue;">(download)</span></a></p>
                         <p class="tab" style="padding-left: 10px;">A database of mineral occurrences, prospects, mines, and mineral resources in the state of Utah.</p>
 
-                    <p><br /><strong>Industrial Mineral Resource Potential</strong></p>
-                    <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_IM_GIS.zip" target="_blank"><span style="color: blue;"> Industrial Mineral GIS data</span></a> <br /><br />
+                        <p><br /><strong>Mining Districts</strong>
+<a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-695.pdf" target="_blank"><span style="color: blue;">(publication, </span></a>
+<a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Mining_Districts_20190116gdb.zip" target="_blank"><span style="color: blue;">GIS data)</span></a> 
+                        <p class="tab" style="padding-left: 10px;">Locations of Utah’s mining districts with summaries of relevant information for each district.</p>
+
+                    <p><br /><strong>Industrial Mineral Resource Potential </strong>
+                    <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_IM_GIS.zip" target="_blank"><span style="color: blue;">(download)</span></a> <br /><br /></p>
                     <p class="tab" style="padding-left: 10px;">Resource potential for various locatable industrial mineral commodities.</p>
-                    
-                    <p><br /><strong>Mining Districts</strong></p>
-                    <p><a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-695.pdf" target="_blank"><span style="color: blue;">Utah Mining Districts publication</span></a></p>
-                   <p> <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Mining_Districts_20190116gdb.zip" target="_blank"><span style="color: blue;"> Utah Mining Districts GIS data</span></a> <br /></p>
-                    <p class="tab" style="padding-left: 10px;">Locations of Utah’s mining districts with summaries of relevant information for each district.</p>
+                
 
                     <p><br /><strong>U.S. Bureau of Mines Wilderness Study Area (WSA) Mineral Land Assessment</strong></p>
                     <p class="tab" style="padding-left: 10px;">Mineral resource assessment reports of BLM Wilderness Study Areas prepared by the U.S. Bureau of Mines.</p>
@@ -569,7 +569,7 @@ require([
               eyeArr.map(function(node){
                 node.title = "Toggle Layer On/Off";
               });
-            }
+            } 
 
             if(titleArr.length){
               titleArr.map(function(node){
@@ -1127,12 +1127,13 @@ const umos = new FeatureLayer({
     popupTemplate: {
         title: "<b>{SITE_NAME}</b>",
         content: "<span class='bold' title='Commodity'><b>Commodity: </b></span>{COMMODITY}</b><br>" +
+        "<span class='bold' title='Commodity'><b>Mineral: </b></span>{ORE_MINERAL}</b><br>" +
                     "<span class='bold' title='Commodity Type'><b>Commodity Type: </b></span>{TYPE}</b><br>" +
                     "<span class='bold' title='Production'><b>Production: </b></span>{PRODUCTION}</b><br>" +
                     "<span class='bold' title='Deposit Size'><b>Deposit Size: </b></span>{DEP_SIZE}</b><br>" +
                     "<span class='bold' title='Mining District'><b>Mining District: </b></span>{DISTRICT}</b><br>" +
                     "<span class='bold' title='County'><b>County: </b></span>{COUNTY}</b><br>" +
-                    "<b><a href='https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS%20Explanation' target='_blank'><span style='color: blue;'> UMOS Explanation</span></a></b>",
+                    "<br><a href='https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS%20Explanation' target='_blank'><span style='color: blue;'> UMOS Explanation</span></a>",
         fieldInfos: [{
             fieldName: "COMMODITY",
             },{
@@ -1145,6 +1146,8 @@ const umos = new FeatureLayer({
             fieldName: "DISTRICT",
         },{
             fieldName: "PRODUCTION",
+            },{
+                fieldName: "ORE_MINERAL",
             }]
     },
     visible: true
