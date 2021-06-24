@@ -1127,13 +1127,13 @@ const umos = new FeatureLayer({
     popupTemplate: {
         title: "<b>{SITE_NAME}</b>",
         content: "<span class='bold' title='Commodity'><b>Commodity: </b></span>{COMMODITY}</b><br>" +
-        "<span class='bold' title='Commodity'><b>Mineral: </b></span>{ORE_MINERAL}</b><br>" +
+        "<span class='bold' title='Commodity'><b>Mineral: </b></span>{ORE_MINERALS}</b><br>" +
                     "<span class='bold' title='Commodity Type'><b>Commodity Type: </b></span>{TYPE}</b><br>" +
                     "<span class='bold' title='Production'><b>Production: </b></span>{PRODUCTION}</b><br>" +
                     "<span class='bold' title='Deposit Size'><b>Deposit Size: </b></span>{DEP_SIZE}</b><br>" +
                     "<span class='bold' title='Mining District'><b>Mining District: </b></span>{DISTRICT}</b><br>" +
                     "<span class='bold' title='County'><b>County: </b></span>{COUNTY}</b><br>" +
-                    "<br><a href='https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS%20Explanation' target='_blank'><span style='color: blue;'> UMOS Explanation</span></a>",
+                    "<br><a href='https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS%20Explanation.pdf' target='_blank'><span style='color: blue;'> UMOS Explanation</span></a>",
         fieldInfos: [{
             fieldName: "COMMODITY",
             },{
@@ -1150,7 +1150,7 @@ const umos = new FeatureLayer({
                 fieldName: "ORE_MINERAL",
             }]
     },
-    visible: true
+    visible: false
 })
 
     const miningDistricts = new FeatureLayer({
@@ -1246,7 +1246,7 @@ const umos = new FeatureLayer({
 
     const industrialMins = new GroupLayer({
         title: "Industrial Mineral Resource Potential",
-        visible: true,
+        visible: false,
         layers: [bentonite, dolomite, gypsum, limestone, silica]
     });
 
@@ -1358,7 +1358,7 @@ const umos = new FeatureLayer({
         outFields: ["*"],
         legendEnabled: true,
         opacity: 0.15,
-        visible: true,
+        visible: false,
         renderer: adminRenderer,
         //labelingInfo: [adminlabelClass],
 
@@ -1393,7 +1393,7 @@ const umos = new FeatureLayer({
 
     const refLayers = new GroupLayer({
         title: "Reference Layers",
-        visible: true,
+        visible: false,
         layers: [adminBounds, countyLayer]
     });
 
