@@ -36,7 +36,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <!-- works -->
 
     <!-- ArcGIS JS 4.10 -->
-    <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/css/main.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/css/main.css">
     <link rel="stylesheet" href="lightbox2/dist/css/lightbox.min.css">
     <link  href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.5.0/viewer.css" rel="stylesheet">
 
@@ -246,15 +246,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <div id="collapseInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingInfo">
                 <div class="panel-body">
-                    <p align="justify">This web map application was created by the Utah Geological Survey (UGS) in cooperation with the U.S. Bureau of Land Management (BLM) to show mineral resource information in Utah. Use the links below to download the map data. <br /><br /><a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-695.pdf" target="_blank"><span style="color: blue;"> Utah Mining Districts publication</span></a> <br /><a href="https://geology.utah.gov/docs/zip/Mining_Districts_20190116gdb.zip" target="_blank"><span style="color: blue;"> Utah Mining Districts GIS data</span></a> <br /><a href="https://geology.utah.gov/docs/zip/Utah_IM_GIS.zip" target="_blank"><span style="color: blue;"> Industrial Mineral GIS data</span></a> <br /><br /><strong>Layer Information</strong></p>
-                    <p><br />Industrial Mineral Resource Potential</p>
-                    <p class="tab" style="padding-left: 10px;">Resource potential for various locatable industrial mineral commodities.</p>
-                    
-                    
-                    <p><br />Mining Districts</p>
-                    <p class="tab" style="padding-left: 10px;">Locations of Utah’s mining districts with summaries of relevant information for each district.</p>
+                    <p align="justify">This web map application was created by the Utah Geological Survey (UGS) in cooperation with the U.S. Bureau of Land Management (BLM) to show mineral resource information in Utah. Use the links below to download the map data. <br /><br />
 
-                    <p><br />U.S. Bureau of Mines Wilderness Study Area (WSA) Mineral Land Assessment</p>
+                        <strong>Layer Information</strong></p>
+
+                        <p><br /><strong>Utah Mineral Occurrence System (UMOS)</strong><a href="https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS2021_05_05.zip" target="_blank"><span style="color: blue;">(download)</span></a></p>
+                        <p class="tab" style="padding-left: 10px;">A database of mineral occurrences, prospects, mines, and mineral resources in the state of Utah.</p>
+
+                        <p><br /><strong>Mining Districts</strong>
+<a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-695.pdf" target="_blank"><span style="color: blue;">(publication, </span></a>
+<a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Mining_Districts_20190116gdb.zip" target="_blank"><span style="color: blue;">GIS data)</span></a> 
+                        <p class="tab" style="padding-left: 10px;">Locations of Utah’s mining districts with summaries of relevant information for each district.</p>
+
+                    <p><br /><strong>Industrial Mineral Resource Potential </strong>
+                    <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_IM_GIS.zip" target="_blank"><span style="color: blue;">(download)</span></a> <br /><br /></p>
+                    <p class="tab" style="padding-left: 10px;">Resource potential for various locatable industrial mineral commodities.</p>
+                
+
+                    <p><br /><strong>U.S. Bureau of Mines Wilderness Study Area (WSA) Mineral Land Assessment</strong></p>
                     <p class="tab" style="padding-left: 10px;">Mineral resource assessment reports of BLM Wilderness Study Areas prepared by the U.S. Bureau of Mines.</p>
                 </div>
             </div>
@@ -370,7 +379,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </script>
 
     <!-- ArcGIS JS 4 -->
-    <script src="https://js.arcgis.com/4.15/"></script>
+    <script src="https://js.arcgis.com/4.19/"></script>
 
 
     <script>
@@ -560,7 +569,7 @@ require([
               eyeArr.map(function(node){
                 node.title = "Toggle Layer On/Off";
               });
-            }
+            } 
 
             if(titleArr.length){
               titleArr.map(function(node){
@@ -775,7 +784,7 @@ require([
             }
           ],
 
-        },
+        }
 
     industrialMinContent = function(feature) {
         var content = "";
@@ -878,6 +887,171 @@ require([
     }
 
 
+
+
+
+
+    const umosRenderer = {
+          type: "unique-value", // autocasts as new SimpleRenderer()
+          field: "TYPE",
+          uniqueValueInfos: [
+                {
+                  value: "Unspecified",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(78, 78, 78)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5  
+                    }
+                  }
+                },                {
+                  value: "Energy",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(255, 211, 127)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Industrial Mineral",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(225, 225, 225)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Industrial Mineral - Energy",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(214, 157, 188)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Metal",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(158,215,174)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Metal - Energy",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(158,170,215)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Metal - Industrial Mineral",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(102,153,205)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Metal - Industrial Mineral - Energy",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "rgb(68,101,137)",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+            ],
+            visualVariables: [
+            {
+              type: "size",
+              valueExpression: "$feature.Prod_Value_symbol",
+              valueExpressionTitle: "Poop",
+              stops: [
+                {
+                  value: 0,
+                  size: 6,
+                  label: "None"
+                },
+                {
+                  value: 1,
+                  size: 10,
+                  label: "Small"
+                },
+                {
+                  value: 2,
+                  size: 14,
+                  label: "Medium"
+                },
+                {
+                  value: 3,
+                  size: 18,
+                  label: "Large"
+                }
+              ]
+            },
+            // {
+            //   type: "color",
+            //   field: "Type_Value_symbol",
+            //   stops: [
+            //   { value: 0,
+            //     color: [78,78,78]
+            // }, 
+            // {value: 1,
+            // color: [255, 211, 127]
+            // }, 
+            // {value: 2,
+            // color: [225, 225, 225]
+            // },
+            // {value: 3,
+            // color: [214, 157, 188]
+            // },
+            // {value: 4,
+            // color: [158, 215, 194]
+            // },
+            // {value: 5,
+            // color: [158, 170, 215]
+            // },
+            // {value: 6,
+            // color: [102, 153, 205]
+            // },
+            // {value: 7,
+            // color: [68, 101, 137]
+            // }
+            //   ]
+            // }
+        ]
+    };
+
+
+
+
+
+      
+
     //remove panels when user clicks on map
 
     app.activeView.on("click", function(event) {
@@ -945,15 +1119,49 @@ require([
 
 };
 
+const umos = new FeatureLayer({
+    url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/12",
+    title: "Utah Mineral Occurrence System",
+    outFields: ["*"],
+    renderer: umosRenderer,
+    popupTemplate: {
+        title: "<b>{SITE_NAME}</b>",
+        content: "<span class='bold' title='Commodity'><b>Commodity: </b></span>{COMMODITY}</b><br>" +
+        "<span class='bold' title='Commodity'><b>Ore Mineral: </b></span>{ORE_MINERALS}</b><br>" +
+                    "<span class='bold' title='Commodity Type'><b>Commodity Type: </b></span>{TYPE}</b><br>" +
+                    "<span class='bold' title='Production'><b>Production: </b></span>{PRODUCTION}</b><br>" +
+                    "<span class='bold' title='Deposit Size'><b>Deposit Size: </b></span>{DEP_SIZE}</b><br>" +
+                    "<span class='bold' title='Mining District'><b>Mining District: </b></span>{DISTRICT}</b><br>" +
+                    "<span class='bold' title='County'><b>County: </b></span>{COUNTY}</b><br>" +
+                    "<br><a href='https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS%20Explanation.pdf' target='_blank'><span style='color: blue;'> UMOS Explanation</span></a>",
+        fieldInfos: [{
+            fieldName: "COMMODITY",
+            },{
+            fieldName: "TYPE",
+            },{
+            fieldName: "PRODUCTION",
+        },{
+            fieldName: "DEP_SIZE",
+        },{
+            fieldName: "DISTRICT",
+        },{
+            fieldName: "PRODUCTION",
+            },{
+                fieldName: "ORE_MINERAL",
+            }]
+    },
+    visible: false
+})
+
     const miningDistricts = new FeatureLayer({
         url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/6",
         title: "Metalliferous Mining Districts",
         outFields: ["*"],
         opacity: 0.5,
         popupTemplate: template,
-        //renderer: minedistrictRenderer,
+        //renderer: minedistrictRenderer, 
         visible: true,
-    });
+    });  
 
     const mineralLandAssessments = new FeatureLayer({
         url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/11",
@@ -1038,7 +1246,7 @@ require([
 
     const industrialMins = new GroupLayer({
         title: "Industrial Mineral Resource Potential",
-        visible: true,
+        visible: false,
         layers: [bentonite, dolomite, gypsum, limestone, silica]
     });
 
@@ -1150,7 +1358,7 @@ require([
         outFields: ["*"],
         legendEnabled: true,
         opacity: 0.15,
-        visible: true,
+        visible: false,
         renderer: adminRenderer,
         //labelingInfo: [adminlabelClass],
 
@@ -1185,7 +1393,7 @@ require([
 
     const refLayers = new GroupLayer({
         title: "Reference Layers",
-        visible: true,
+        visible: false,
         layers: [adminBounds, countyLayer]
     });
 
@@ -1193,9 +1401,13 @@ require([
     app.activeView.map.add(adminBounds);
     app.activeView.map.add(mineralLandAssessments);
 
-    app.activeView.map.add(miningDistricts);
 
     app.activeView.map.add(industrialMins);
+    app.activeView.map.add(miningDistricts);
+    app.activeView.map.add(umos);
+
+
+
 
 
     app.activeView.popup.on("trigger-action", function(event) {
