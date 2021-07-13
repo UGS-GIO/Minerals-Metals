@@ -63,9 +63,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             margin-left: 4%;
         }
 
-        .esri-legend__layer-caption {
+        /* .esri-legend__layer-caption {
             display: none;
-        }
+        } */
 
         .esri-legend__message {
             display: none;
@@ -416,13 +416,9 @@ require([
     // Bootstrap
     "bootstrap/Collapse",
     "bootstrap/Dropdown",
-    "bootstrap/Tab",
-    "dojo/on",
-    "dojo/dom",
-    "dojo/dom-construct",
-    "dojo/domReady!"
+    "bootstrap/Tab"
 
-], function(Map, Basemap, Portal, Graphic, FeatureLayer, GroupLayer, MapView, SceneView, TextContent, AttachmentsContent, RelationshipQuery, Search, watchUtils, Home, Zoom, Compass, Locate, Legend, BasemapToggle, LayerList, QueryTask, Query, query, declare, request, CalciteMaps, CalciteMapsArcGIS, on, dom) {
+], function(Map, Basemap, Portal, Graphic, FeatureLayer, GroupLayer, MapView, SceneView, TextContent, AttachmentsContent, RelationshipQuery, Search, watchUtils, Home, Zoom, Compass, Locate, Legend, BasemapToggle, LayerList, QueryTask, Query, query, declare, request, CalciteMaps, CalciteMapsArcGIS) {
 
     // App
     app = {
@@ -559,11 +555,11 @@ require([
         container: "legendDiv",
         listItemCreatedFunction: function(event) {
             var item = event.item;
+
             setTimeout(function() {  //function to change tooltips for each layer in layerlist
             var eyeArr = query('.esri-layer-list__item-toggle');
             var titleArr = query('.esri-layer-list__item-title');
-
-            //console.log(eyeArr);
+           
 
             if(eyeArr.length){
               eyeArr.map(function(node){
@@ -576,6 +572,9 @@ require([
                 node.title = "Toggle Layer On/Off";
               });
             }
+
+
+
 
           }, 500);
             if (item.layer.type != "group") { // don't show legend twice
@@ -600,6 +599,8 @@ require([
             }
         }
     });
+
+
 
     layerList.on("trigger-action", function(event) {
 
@@ -894,6 +895,9 @@ require([
     const umosRenderer = {
           type: "unique-value", // autocasts as new SimpleRenderer()
           field: "TYPE",
+          legendOptions: {
+                  title: "Commodity Type"
+              },
           uniqueValueInfos: [
                 {
                   value: "Unspecified",
@@ -989,7 +993,9 @@ require([
             {
               type: "size",
               valueExpression: "$feature.Prod_Value_symbol",
-              valueExpressionTitle: "Poop",
+              legendOptions: {
+                  title: "Production"
+              },
               stops: [
                 {
                   value: 0,
@@ -1013,36 +1019,7 @@ require([
                 }
               ]
             },
-            // {
-            //   type: "color",
-            //   field: "Type_Value_symbol",
-            //   stops: [
-            //   { value: 0,
-            //     color: [78,78,78]
-            // }, 
-            // {value: 1,
-            // color: [255, 211, 127]
-            // }, 
-            // {value: 2,
-            // color: [225, 225, 225]
-            // },
-            // {value: 3,
-            // color: [214, 157, 188]
-            // },
-            // {value: 4,
-            // color: [158, 215, 194]
-            // },
-            // {value: 5,
-            // color: [158, 170, 215]
-            // },
-            // {value: 6,
-            // color: [102, 153, 205]
-            // },
-            // {value: 7,
-            // color: [68, 101, 137]
-            // }
-            //   ]
-            // }
+
         ]
     };
 
@@ -1110,6 +1087,9 @@ require([
 
     var minedistrictRenderer = {
   type: "simple",  // autocasts as new UniqueValueRenderer()
+  legendOptions: {
+                  title: "Metalliferous Mining Districts"
+              },
   symbol: { type: "simple-fill",  // autocasts as new SimpleFillSymbol()
       color: "#ffcc80",
       outline: {
@@ -1151,7 +1131,8 @@ const umos = new FeatureLayer({
             }]
     },
     visible: false
-})
+});
+
 
     const miningDistricts = new FeatureLayer({
         url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/6",
@@ -1246,7 +1227,7 @@ const umos = new FeatureLayer({
 
     const industrialMins = new GroupLayer({
         title: "Industrial Mineral Resource Potential",
-        visible: false,
+        visible: true,
         layers: [bentonite, dolomite, gypsum, limestone, silica]
     });
 
@@ -1406,8 +1387,16 @@ const umos = new FeatureLayer({
     app.activeView.map.add(miningDistricts);
     app.activeView.map.add(umos);
 
+    watchUtils.watch(silica, 'visible', function(e) {
+        console.log(e);
+        if (e == true){
+        //var labelArr = query('[aria-labelledby$="object-27__title"]');
 
+        document.querySelector("#legendDiv > ul > li:nth-child(2) > div.esri-layer-list-panel > div > div > div > div > div > div > div.esri-legend__layer-caption").innerHTML = "";
 
+        }
+    });
+    
 
 
     app.activeView.popup.on("trigger-action", function(event) {
@@ -1550,6 +1539,8 @@ queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
             // Grab the features of the popup
             features = app.mapView.popup.features;
         });
+
+        
 
 
 
