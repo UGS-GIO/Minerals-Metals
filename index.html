@@ -763,7 +763,7 @@ require([
     const template = {
             title: "<b>{District} Mining District</b>",
             content: miningContent,
-            //actions: [photoAction]
+            //actions: [photoAction],
             fieldInfos: [
             {
               fieldName: "District"
@@ -1400,6 +1400,7 @@ const umos = new FeatureLayer({
 
 
     app.activeView.popup.on("trigger-action", function(event) {
+        
             // Execute the photoGallery() function if the photo action is clicked
             if (event.action.id === "photo-gallery") {
                 photoGallery();
@@ -1410,7 +1411,7 @@ const umos = new FeatureLayer({
 
 // //photos action code
 watchUtils.when(app.activeView.popup, "selectedFeature", function(evt) {
-    //console.log(evt);
+    console.log(evt);
 
 query("#panelInfo").removeClass("in");
 query("#panelDetails").removeClass("in");
@@ -1433,17 +1434,17 @@ relationQuery = new RelationshipQuery({
     relationshipId: 0,
     //where: "1=1"
 });
-//console.log(relationQuery);
+console.log(relationQuery);
 
 queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
-    //console.log(rslts);
+    console.log(rslts);
 
     document.getElementById("attDetails").innerHTML = "";
     var features = rslts[objectID].features;
 
-    if (rslts) {
+    if (features) {
 
-        //console.log("Found Features" + features);
+        //console.log("Found Features");
         app.activeView.popup.actions.push(photoAction);
 
         // //adds labels for popup action buttons. for some reason having more than two custom actions removes the labels from all of them
