@@ -1411,17 +1411,18 @@ const umos = new FeatureLayer({
 
 // //photos action code
 watchUtils.when(app.activeView.popup, "selectedFeature", function(evt) {
-    console.log(evt);
+
+    if (evt.layer.title == "Metalliferous Mining Districts") {
 
 query("#panelInfo").removeClass("in");
 query("#panelDetails").removeClass("in");
 query("#panelInventory").removeClass("in");
 //console.log(app.activeView.popup.actions);
-app.activeView.popup.actions.splice(1, 2);
+//app.activeView.popup.actions.splice(1, 2);
 
 
 objectID = evt.attributes.OBJECTID;
-//console.log(objectID);
+//console.log(objectID);  
 //query the well layer
 var queryTask = new QueryTask({
     url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/6"
@@ -1498,6 +1499,8 @@ queryTask.executeRelationshipQuery(relationQuery).then(function (rslts) {
 .catch(function (error) {
   //console.log("query task error", error);
 });
+}
+app.activeView.popup.actions = [];
 });
 
 
