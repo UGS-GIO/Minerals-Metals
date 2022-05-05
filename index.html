@@ -143,6 +143,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         color: #cd4;
         font-size: 20px;
     }
+
+    .esri-legend__layer-caption {
+        display: none;
+    }
     </style>
 
 </head>
@@ -646,6 +650,25 @@ require([
 
     //Popup Templates
 
+    //critical mineral content template
+    critMinContent = function(feature) {
+        var content = "";
+        console.log(feature);
+
+        content += "<br><span class='bold' title='Name'><b>Mineral: </b></span>" + feature.graphic.attributes.CriticalMineral;
+
+        content += "<br><span class='bold' title='Name'><b>Site Name: </b></span>" + feature.graphic.attributes.SITE_NAME;
+
+        content += "<br><span class='bold' title='Name'><b>Production: </b></span>" + feature.graphic.attributes.PRODUCTION;
+
+        content += "<br><span class='bold' title='Name'><b>Deposit Size: </b></span>" + feature.graphic.attributes.DEP_SIZE;
+
+        if (feature.graphic.attributes.CriticalMineral == "Helium") {
+            content += "<br><span class='bold' title='Name'><b>Well Name: </b></span>" + feature.graphic.attributes.SITE_NAME;
+        }
+
+        return content;
+    }
 
     rockHoundingContent = function(value, key, data) {
         var content = "";
@@ -832,6 +855,78 @@ require([
             if (feature.graphic.attributes.Commodity) {
                 content += "<br><span class='bold' title='Show complete report for {Commodity}'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Bentonite.pdf' target='_blank'><b>Layer Information</b></a><br>";
             }
+        
+
+
+        return content;
+
+    }
+
+    potashContent = function(feature) {
+        console.log(feature);
+        var content = "";
+
+       
+            if (feature.graphic.attributes.Name) {
+                content += "<span class='bold' title='Name'><b>Name: </b></span>{Name}</b><br>";
+            }
+        
+        
+            if (feature.graphic.attributes.Deposit_Type) {
+                content += "<span class='bold' title='UNIT NAME'><b>Deposit Type: </b></span>{Deposit_Type}</b><br>";
+            }
+
+            //if (feature.graphic.attributes.Commodity == "Potash") {
+                content += "<br><span class='bold' title='Show complete report for Potash'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Potash.pdf' target='_blank'><b>Layer Information</b></a>";
+            //}
+        
+
+
+        return content;
+
+    }
+
+    phosphContent = function(feature) {
+        console.log(feature);
+        var content = "";
+
+       
+            if (feature.graphic.attributes.Name) {
+                content += "<span class='bold' title='Name'><b>Name: </b></span>{Name}</b><br>";
+            }
+        
+        
+            if (feature.graphic.attributes.UnitName) {
+                content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>{UnitName}</b><br>";
+            }
+
+            //if (feature.graphic.attributes.Commodity == "Phosphate") {
+                content += "<br><span class='bold' title='Show complete report for Phosphate'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Phosphate.pdf' target='_blank'><b>Layer Information</b></a>";
+            //}
+        
+
+
+        return content;
+
+    }
+
+    aluniteContent = function(feature) {
+        console.log(feature);
+        var content = "";
+
+       
+            if (feature.graphic.attributes.Name) {
+                content += "<span class='bold' title='Name'><b>Name: </b></span>{Name}</b><br>";
+            }
+        
+        
+            if (feature.graphic.attributes.Deposit_Type) {
+                content += "<span class='bold' title='UNIT NAME'><b>Deposit Type: </b></span>{Deposit_Type}</b><br>";
+            }
+
+            //if (feature.graphic.attributes.Commodity == "Phosphate") {
+                content += "<br><span class='bold' title='Show complete report for Phosphate'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Alunite.pdf' target='_blank'><b>Layer Information</b></a>";
+            //}
         
 
 
@@ -1437,6 +1532,10 @@ const critMinerals = new FeatureLayer({
     url: 'https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/18',
     title: "Critical Minerals",
     outFields: ["*"],
+    popupTemplate: {
+        title: "<b>Critical Mineral</b>",
+        content: critMinContent
+    },
     renderer: critMineralsRenderer,
     visible: false
 });
@@ -1445,7 +1544,7 @@ const critMinPolys = new FeatureLayer({
     url:'https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/14',
     title: "Critical Mineral Areas",
     visible: false
-})
+});
 
 
     const miningDistricts = new FeatureLayer({
@@ -1539,10 +1638,49 @@ const critMinPolys = new FeatureLayer({
         visible: false,
     });
 
+    const phosphate = new FeatureLayer({
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/17",
+        title: "Phosphate",
+        outFields: ["*"],
+        opacity: 0.5,
+
+        popupTemplate: {
+            title: "<b>Phosphate Potential</b>",
+            content: phosphContent
+        },
+        visible: false,
+    });
+
+    const potash = new FeatureLayer({
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/13",
+        title: "Potash",
+        outFields: ["*"],
+        opacity: 0.5,
+
+        popupTemplate: {
+            title: "<b>Potash Potential</b>",
+            content: potashContent
+        },
+        visible: false,
+    });
+
+    const alunite = new FeatureLayer({
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/15",
+        title: "Alunite",
+        outFields: ["*"],
+        opacity: 0.5,
+
+        popupTemplate: {
+            title: "<b>Alunite Potential</b>",
+            content: aluniteContent
+        },
+        visible: false,
+    });
+
     const industrialMins = new GroupLayer({
         title: "Industrial Mineral Resource Potential",
         visible: true,
-        layers: [bentonite, dolomite, gypsum, limestone, silica]
+        layers: [potash, phosphate, alunite, bentonite, dolomite, gypsum, limestone, silica]
     });
 
     const adminlabelClass = { // autocasts as new LabelClass()
