@@ -143,6 +143,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         color: #cd4;
         font-size: 20px;
     }
+
+    .esri-legend__layer-caption {
+        display: none;
+    }
     </style>
 
 </head>
@@ -646,6 +650,25 @@ require([
 
     //Popup Templates
 
+    //critical mineral content template
+    critMinContent = function(feature) {
+        var content = "";
+        console.log(feature);
+
+        content += "<br><span class='bold' title='Name'><b>Mineral: </b></span>" + feature.graphic.attributes.CriticalMineral;
+
+        content += "<br><span class='bold' title='Name'><b>Site Name: </b></span>" + feature.graphic.attributes.SITE_NAME;
+
+        content += "<br><span class='bold' title='Name'><b>Production: </b></span>" + feature.graphic.attributes.PRODUCTION;
+
+        content += "<br><span class='bold' title='Name'><b>Deposit Size: </b></span>" + feature.graphic.attributes.DEP_SIZE;
+
+        if (feature.graphic.attributes.CriticalMineral == "Helium") {
+            content += "<br><span class='bold' title='Name'><b>Well Name: </b></span>" + feature.graphic.attributes.SITE_NAME;
+        }
+
+        return content;
+    }
 
     rockHoundingContent = function(value, key, data) {
         var content = "";
@@ -816,7 +839,7 @@ require([
     }
 
     bentMinContent = function(feature) {
-        console.log(feature);
+
         var content = "";
 
        
@@ -829,11 +852,81 @@ require([
                 content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>{UnitName}</b><br>";
             }
         
-
-        
             if (feature.graphic.attributes.Commodity) {
                 content += "<br><span class='bold' title='Show complete report for {Commodity}'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Bentonite.pdf' target='_blank'><b>Layer Information</b></a><br>";
             }
+        
+
+
+        return content;
+
+    }
+
+    potashContent = function(feature) {
+
+        var content = "";
+
+       
+            if (feature.graphic.attributes.Name) {
+                content += "<span class='bold' title='Name'><b>Name: </b></span>{Name}</b><br>";
+            }
+        
+        
+            if (feature.graphic.attributes.Deposit_Type) {
+                content += "<span class='bold' title='UNIT NAME'><b>Deposit Type: </b></span>{Deposit_Type}</b><br>";
+            }
+
+            //if (feature.graphic.attributes.Commodity == "Potash") {
+                content += "<br><span class='bold' title='Show complete report for Potash'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Potash.pdf' target='_blank'><b>Layer Information</b></a>";
+            //}
+        
+
+
+        return content;
+
+    }
+
+    phosphContent = function(feature) {
+
+        var content = "";
+
+       
+            if (feature.graphic.attributes.Age) {
+                content += "<span class='bold' title='Age'><b>Age: </b></span>{Age}</b><br>";
+            }
+        
+        
+            if (feature.graphic.attributes.UnitName) {
+                content += "<span class='bold' title='UNIT NAME'><b>Unit Name: </b></span>{UNITNAME}</b><br>";
+            }
+
+            //if (feature.graphic.attributes.Commodity == "Phosphate") {
+                content += "<br><span class='bold' title='Show complete report for Phosphate'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Phosphate.pdf' target='_blank'><b>Layer Information</b></a>";
+            //}
+        
+
+
+        return content;
+
+    }
+
+    aluniteContent = function(feature) {
+
+        var content = "";
+
+       
+            if (feature.graphic.attributes.Name) {
+                content += "<span class='bold' title='Name'><b>Name: </b></span>{Name}</b><br>";
+            }
+        
+        
+            if (feature.graphic.attributes.Deposit_Type) {
+                content += "<span class='bold' title='UNIT NAME'><b>Deposit Type: </b></span>{Deposit_Type}</b><br>";
+            }
+
+            //if (feature.graphic.attributes.Commodity == "Phosphate") {
+                content += "<br><span class='bold' title='Show complete report for Phosphate'></span>" + "<a href='https://ugspub.nr.utah.gov/publications/blm_mineral_resources/Alunite.pdf' target='_blank'><b>Layer Information</b></a>";
+            //}
         
 
 
@@ -1024,6 +1117,308 @@ require([
     };
 
 
+    //critical minerals renderer
+    const critMineralsRenderer = {
+          type: "unique-value", // autocasts as new SimpleRenderer()
+          field: "CriticalMineral",
+          legendOptions: {
+                  title: "Mineral"
+              },
+          uniqueValueInfos: [
+                {
+                  value: "Alunite",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#00008b",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5  
+                    }
+                  }
+                },                {
+                  value: "Antimony",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#0000ff",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Arsenic",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#00bfff",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Barite",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#00ffff",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Beryllium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#808000",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Bismuth",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#008000",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Cobalt",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#adff2f",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },                {
+                  value: "Fluorite",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#98fb98",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }                
+                },
+                {
+                    value: "Gallium-Germanium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#f0e68c",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Helium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#ffd700",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Indium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#ff8c00",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Lithium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#fa8072",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Magnesium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#ff0000",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Platinum-Palladium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#8b0000",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "REE",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#ff1493",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Rhenium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#ff00ff",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Tellurium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#dda0dd",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Tin",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#ba55d3",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Titanium and/or Zirconium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#483d8b",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Tungsten",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#2f4f4f",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Uranium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#c0c0c0",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                },
+                {
+                    value: "Vanadium",
+                  symbol: {
+                    type: "simple-marker",
+                    size: 6,
+                    color: "#d8cef2",
+                    outline: {  
+                        color: [ 90,90,90 ],
+                    width: 0.5
+                    }
+                  }
+                }
+            ],
+            visualVariables: [
+            {
+              type: "size",
+              valueExpression: "$feature.Stage_Value_Symbol",
+              legendOptions: {
+                  title: "Production"
+              },
+              stops: [
+                {
+                  value: 0,
+                  size: 6,
+                  label: "Other deposit"
+                },
+                {
+                  value: 1,
+                  size: 10,
+                  label: "Potential Resource"
+                },
+                {
+                  value: 2,
+                  size: 14,
+                  label: "Established Resource"
+                },
+                {
+                  value: 3,
+                  size: 18,
+                  label: "Active Producer"
+                }
+              ]
+            },
+
+        ]
+    };
+
+
+
 
 
 
@@ -1133,6 +1528,24 @@ const umos = new FeatureLayer({
     visible: false
 });
 
+const critMinerals = new FeatureLayer({
+    url: 'https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/18',
+    title: "Critical Minerals",
+    outFields: ["*"],
+    popupTemplate: {
+        title: "<b>Critical Mineral</b>",
+        content: critMinContent
+    },
+    renderer: critMineralsRenderer,
+    visible: false
+});
+
+const critMinPolys = new FeatureLayer({
+    url:'https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/14',
+    title: "Critical Mineral Areas",
+    visible: false
+});
+
 
     const miningDistricts = new FeatureLayer({
         url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/6",
@@ -1225,10 +1638,49 @@ const umos = new FeatureLayer({
         visible: false,
     });
 
+    const phosphate = new FeatureLayer({
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/17",
+        title: "Phosphate",
+        outFields: ["*"],
+        opacity: 0.5,
+
+        popupTemplate: {
+            title: "<b>Phosphate Potential</b>",
+            content: phosphContent
+        },
+        visible: false,
+    });
+
+    const potash = new FeatureLayer({
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/13",
+        title: "Potash",
+        outFields: ["*"],
+        opacity: 0.5,
+
+        popupTemplate: {
+            title: "<b>Potash Potential</b>",
+            content: potashContent
+        },
+        visible: false,
+    });
+
+    const alunite = new FeatureLayer({
+        url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/15",
+        title: "Alunite",
+        outFields: ["*"],
+        opacity: 0.5,
+
+        popupTemplate: {
+            title: "<b>Alunite Potential</b>",
+            content: aluniteContent
+        },
+        visible: false,
+    });
+
     const industrialMins = new GroupLayer({
         title: "Industrial Mineral Resource Potential",
         visible: true,
-        layers: [bentonite, dolomite, gypsum, limestone, silica]
+        layers: [potash, phosphate, alunite, bentonite, dolomite, gypsum, limestone, silica]
     });
 
     const adminlabelClass = { // autocasts as new LabelClass()
@@ -1378,6 +1830,12 @@ const umos = new FeatureLayer({
         layers: [adminBounds, countyLayer]
     });
 
+    const critMinGroup = new GroupLayer({
+        title: "Critical Minerals",
+        visible: true,
+        layers: [critMinerals, critMinPolys]
+    });
+
     app.activeView.map.add(countyLayer);
     app.activeView.map.add(adminBounds);
     app.activeView.map.add(mineralLandAssessments);
@@ -1385,6 +1843,7 @@ const umos = new FeatureLayer({
 
     app.activeView.map.add(industrialMins);
     app.activeView.map.add(miningDistricts);
+    app.activeView.map.add(critMinGroup);
     app.activeView.map.add(umos);
 
     watchUtils.watch(silica, 'visible', function(e) {
