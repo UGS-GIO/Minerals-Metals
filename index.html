@@ -289,7 +289,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <option value="satellite" data-vector="satellite">Satellite</option>
                         <option value="hybrid" data-vector="hybrid">Hybrid</option>
                         <option value="national-geographic" data-vector="national-geographic">National Geographic</option>
-                        <option value="topo" data-vector="topo-vector" selected="">Topographic</option>
+                        <option value="topo-vector" data-vector="topo-vector" selected="">Topographic</option>
                         <option value="gray" data-vector="gray-vector">Gray</option>
                         <option value="dark-gray" data-vector="dark-gray-vector">Dark Gray</option>
                         <option value="osm" data-vector="osm">Open Street Map</option>
@@ -428,7 +428,7 @@ require([
     app = {
         zoom: 8,
         center: [-112, 39.5],
-        basemap: "terrain",
+        basemap: "topo-vector",
         viewPadding: {
             top: 50,
             bottom: 0
@@ -1530,7 +1530,7 @@ const umos = new FeatureLayer({
 
 const critMinerals = new FeatureLayer({
     url: 'https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/18',
-    title: "Critical Minerals",
+    title: "Critical Mineral",
     outFields: ["*"],
     popupTemplate: {
         title: "<b>Critical Mineral</b>",
