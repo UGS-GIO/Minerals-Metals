@@ -255,13 +255,16 @@
 
                         <strong>Layer Information</strong></p>
 
-                        <p><br /><strong>Utah Mineral Occurrence System (UMOS)</strong><a href="https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS2021_05_05.zip" target="_blank"><span style="color: blue;"> (download)</span></a></p>
+                        <p><br /><strong>Utah Mineral Occurrence System (UMOS)</strong><a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-757/ofr-757.zip" target="_blank"><span style="color: blue;"> (data, </span></a><a href=" https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-757/ofr-757.pdf" target="_blank"><span style="color: blue;"> report) </span></a></p>
                         <p class="tab" style="padding-left: 10px;">A database of mineral occurrences, prospects, mines, and mineral resources in the state of Utah.</p>
 
+                       
+
                         <p><br /><strong>Critical Mineral Occurrences</strong>
-                            <a href="https://ugspub.nr.utah.gov/publications/circular/c-129.pdf" target="_blank"><span style="color: blue;">(publication, </span></a>
-                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_CriticalMinerals.gdb.zip" target="_blank"><span style="color: blue;">GIS data)</span></a> 
-                                                    <p class="tab" style="padding-left: 10px;">Locations in Utah with critical mineral potential and of known critical mineral occurrences. Definition of critical mineral is based on the <a href="https://www.federalregister.gov/documents/2018/05/18/2018-10667/final-list-of-critical-minerals-2018" target="_blank"><span style="color: blue;">2018 list published by the U.S. Geological Survey.</span></a></p>
+                            <a href="https://ugspub.nr.utah.gov/publications/circular/c-135.pdf" target="_blank"><span style="color: blue;">(publication, </span></a>
+                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_Critical_Minerals.gdb.zip" target="_blank"><span style="color: blue;">current GIS data, </span></a> 
+                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_CriticalMinerals.gdb.zip" target="_blank"><span style="color: blue;">old GIS data)</span></a> 
+                                                    <p class="tab" style="padding-left: 10px;">Locations in Utah with critical mineral potential and of known critical mineral occurrences. Definition of critical mineral is based on the <a href="https://www.federalregister.gov/documents/2022/02/24/2022-04027/2022-final-list-of-critical-minerals" target="_blank"><span style="color: blue;">2022 list published by the U.S. Geological Survey.</span></a></p>
 
                         <p><br /><strong>Mining Districts</strong>
 <a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-695.pdf" target="_blank"><span style="color: blue;">(publication, </span></a>
@@ -399,6 +402,8 @@ require([
     "esri/Basemap",
     "esri/portal/Portal",
     "esri/Graphic",
+    "esri/renderers/Renderer",
+    "esri/renderers/UniqueValueRenderer",
     "esri/layers/FeatureLayer",
     "esri/layers/GroupLayer",
     "esri/views/MapView",
@@ -428,7 +433,7 @@ require([
     "bootstrap/Dropdown",
     "bootstrap/Tab"
 
-], function(Map, Basemap, Portal, Graphic, FeatureLayer, GroupLayer, MapView, SceneView, TextContent, AttachmentsContent, RelationshipQuery, Search, watchUtils, Home, Zoom, Compass, Locate, Legend, BasemapToggle, LayerList, QueryTask, Query, query, declare, request, CalciteMaps, CalciteMapsArcGIS) {
+], function(Map, Basemap, Portal, Graphic, Renderer, UniqueValueRenderer, FeatureLayer, GroupLayer, MapView, SceneView, TextContent, AttachmentsContent, RelationshipQuery, Search, watchUtils, Home, Zoom, Compass, Locate, Legend, BasemapToggle, LayerList, QueryTask, Query, query, declare, request, CalciteMaps, CalciteMapsArcGIS) {
 
     // App
     app = {
@@ -618,7 +623,9 @@ require([
         var id = event.action.id;
         var title = event.item.title;
 
-        if (title === "Mining Districts") {
+        if (title === "Critical Mineral Areas") {
+            layer = critMinPolys;
+        } else if (title === "Mining Districts") {
             layer = miningDistricts;
         } else if (title === "Land Ownership") {
             layer = adminBounds;
@@ -661,16 +668,32 @@ require([
         var content = "";
         console.log(feature);
 
-        content += "<br><span class='bold' title='Name'><b>Mineral: </b></span>" + feature.graphic.attributes.CriticalMineral;
-
         content += "<br><span class='bold' title='Name'><b>Site Name: </b></span>" + feature.graphic.attributes.SITE_NAME;
 
-        content += "<br><span class='bold' title='Name'><b>Production: </b></span>" + feature.graphic.attributes.PRODUCTION;
+        content += "<br><span class='bold' title='Name'><b>Commodity: </b></span>" + feature.graphic.attributes.commodity;
 
-        content += "<br><span class='bold' title='Name'><b>Deposit Size: </b></span>" + feature.graphic.attributes.DEP_SIZE;
+        content += "<br><span class='bold' title='Name'><b>Label: </b></span>" + feature.graphic.attributes.label;
 
         if (feature.graphic.attributes.CriticalMineral == "Helium") {
             content += "<br><span class='bold' title='Name'><b>Well Name: </b></span>" + feature.graphic.attributes.SITE_NAME;
+        }
+
+        return content;
+    }
+
+        //critical mineral polys popup template
+        critMinPolysContent = function(feature) {
+        var content = "";
+        console.log(feature);
+        if (feature.graphic.attributes.District) {
+            content += "<br><span class='bold' title='Name'><b>District Name: </b></span>" + feature.graphic.attributes.District;
+        }
+        if (feature.graphic.attributes.Commodity) {
+            content += "<br><span class='bold' title='Name'><b>Commodity: </b></span>" + feature.graphic.attributes.Commodity;
+        }
+        if (feature.graphic.attributes.label) {
+            content += "<br><span class='bold' title='Name'><b>Label: </b></span>" + feature.graphic.attributes.label;
+
         }
 
         return content;
@@ -1126,7 +1149,7 @@ require([
     //critical minerals renderer
     const critMineralsRenderer = {
           type: "unique-value", // autocasts as new SimpleRenderer()
-          field: "CriticalMineral",
+          field: "commodity",
           legendOptions: {
                   title: "Mineral"
               },
@@ -1389,43 +1412,72 @@ require([
                   }
                 }
             ],
-            visualVariables: [
-            {
-              type: "size",
-              valueExpression: "$feature.Stage_Value_Symbol",
-              legendOptions: {
-                  title: "Production"
-              },
-              stops: [
-                {
-                  value: 0,
-                  size: 6,
-                  label: "Other deposit"
-                },
-                {
-                  value: 1,
-                  size: 10,
-                  label: "Potential Resource"
-                },
-                {
-                  value: 2,
-                  size: 14,
-                  label: "Established Resource"
-                },
-                {
-                  value: 3,
-                  size: 18,
-                  label: "Active Producer"
-                }
-              ]
-            },
+        //     visualVariables: [
+        //     {
+        //       type: "size",
+        //       valueExpression: "$feature.Stage_Value_Symbol",
+        //       legendOptions: {
+        //           title: "Production"
+        //       },
+        //       stops: [
+        //         {
+        //           value: 0,
+        //           size: 6,
+        //           label: "Other deposit"
+        //         },
+        //         {
+        //           value: 1,
+        //           size: 10,
+        //           label: "Potential Resource"
+        //         },
+        //         {
+        //           value: 2,
+        //           size: 14,
+        //           label: "Established Resource"
+        //         },
+        //         {
+        //           value: 3,
+        //           size: 18,
+        //           label: "Active Producer"
+        //         }
+        //       ]
+        //     },
 
-        ]
+        // ]
     };
 
 
 
-
+//critical mineral areas renderer
+    const critMineralAreasRenderer = {
+          type: "unique-value", // autocasts as new SimpleRenderer()
+          //field: "label",
+          defaultLabel: "Other Critical Mineral Areas",
+          defaultSymbol: {
+            type: "simple-fill",  // Other Critical Mineral Areas
+            color: "rgba(184, 134, 82, 255)",
+                outline: {  // autocasts as new SimpleLineSymbol()
+                width: "0px"
+            }
+        },
+          legendOptions: {
+                  title: "Mineral"
+              },
+          valueExpression: "When($feature.label == 'Lithium Potential In Brine' || $feature.label == 'Magnesium Potential In Brine', 'Lithium and Magnesium potential in brine', 'Other Critical Mineral Areas' )",
+          uniqueValueInfos: [
+                {
+                  value: "Lithium and Magnesium potential in brine",
+                  label: "Lithium and Magnesium potential in brine",
+                  symbol: {
+                    type: "simple-fill",
+                    color: "rgba(250, 128, 114, 255)",
+                    outline: {  
+                        width: "0px"
+                    }
+                  }
+                }
+            ],
+    };
 
 
       
@@ -1501,7 +1553,7 @@ require([
 };
 
 const umos = new FeatureLayer({
-    url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/12",
+    url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web2_view/FeatureServer/12",
     title: "Utah Mineral Occurrence System",
     outFields: ["*"],
     renderer: umosRenderer,
@@ -1535,7 +1587,7 @@ const umos = new FeatureLayer({
 });
 
 const critMinerals = new FeatureLayer({
-    url: 'https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/18',
+    url: 'https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web2_view/FeatureServer/18',
     title: "Critical Mineral Occurrences",
     outFields: ["*"],
     popupTemplate: {
@@ -1547,8 +1599,14 @@ const critMinerals = new FeatureLayer({
 });
 
 const critMinPolys = new FeatureLayer({
-    url:'https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web_View/FeatureServer/14',
+    url:'https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web2_view/FeatureServer/14',
     title: "Critical Mineral Areas",
+    outFields: ["*"],
+    popupTemplate: {
+        title: "<b>Critical Mineral Areas</b>",
+        content: critMinPolysContent
+    },
+    renderer: critMineralAreasRenderer,
     visible: false
 });
 
@@ -1793,10 +1851,11 @@ const critMinPolys = new FeatureLayer({
 
     const adminBounds = new FeatureLayer({
         url: "https://gis.trustlands.utah.gov/server/rest/services/Ownership/UT_SITLA_Ownership_LandOwnership/FeatureServer",
+        url: "https://gis.trustlands.utah.gov/mapping/rest/services/Land_Ownership_WM/MapServer/0",
         title: "Land Ownership",
         outFields: ["*"],
         legendEnabled: true,
-        opacity: 0.15,
+        opacity: 0.45,
         visible: false,
         renderer: adminRenderer,
         //labelingInfo: [adminlabelClass],
@@ -1839,7 +1898,7 @@ const critMinPolys = new FeatureLayer({
     const critMinGroup = new GroupLayer({
         title: "Critical Minerals",
         visible: true,
-        layers: [critMinerals, critMinPolys]
+        layers: [critMinPolys, critMinerals]
     });
 
     app.activeView.map.add(countyLayer);
@@ -1876,6 +1935,12 @@ const critMinPolys = new FeatureLayer({
 
 // //photos action code
 watchUtils.when(app.activeView.popup, "selectedFeature", function(evt) {
+    console.log(evt);
+
+    if (evt.attributes.label == "Magnesium Potential In Brine" || evt.attributes.label == "Lithium Potential In Brine") {
+        console.log("hide Popup");
+        app.activeView.popup.close();
+    }
 
     if (evt.layer.title == "Metalliferous Mining Districts") {
 
@@ -2014,6 +2079,8 @@ app.activeView.popup.actions = [];
 
 
 });
+
+
   </script>
 
    <!-- Bootstrap core JavaScript
