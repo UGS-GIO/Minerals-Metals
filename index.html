@@ -255,19 +255,19 @@
 
                         <strong>Layer Information</strong></p>
 
-                        <p><br /><strong>Utah Mine Waste Inventory</strong><a href="https://ugspub.nr.utah.gov/publications/data_series/ds-8/ds-8.zip" target="_blank"><span style="color: blue;"> (data, </span></a><a href="http://doi.org/10.34191/DS-8" target="_blank"><span style="color: blue;"> publication) </span></a></p>
-                        <p class="tab" style="padding-left: 10px;">A database of significant mine waste features with an area greater than 2000 m<sup>2</sup> in Utah that includes information on spatial extent and geologic character of these features.</p>
-
                         <p><br /><strong>Utah Mineral Occurrence System (UMOS)</strong><a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-757/ofr-757.zip" target="_blank"><span style="color: blue;"> (data, </span></a><a href=" https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-757/ofr-757.pdf" target="_blank"><span style="color: blue;"> report) </span></a></p>
                         <p class="tab" style="padding-left: 10px;">A database of mineral occurrences, prospects, mines, and mineral resources in the state of Utah.</p>
 
-                       
+
 
                         <p><br /><strong>Critical Mineral Occurrences</strong>
                             <a href="https://ugspub.nr.utah.gov/publications/circular/c-135.pdf" target="_blank"><span style="color: blue;">(publication, </span></a>
-                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_Critical_Minerals.gdb.zip" target="_blank"><span style="color: blue;">current GIS data, </span></a> 
-                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_CriticalMinerals.gdb.zip" target="_blank"><span style="color: blue;">old GIS data)</span></a> 
+                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_Critical_Minerals.gdb.zip" target="_blank"><span style="color: blue;">current GIS data, </span></a>
+                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_CriticalMinerals.gdb.zip" target="_blank"><span style="color: blue;">old GIS data)</span></a>
                                                     <p class="tab" style="padding-left: 10px;">Locations in Utah with critical mineral potential and of known critical mineral occurrences. Definition of critical mineral is based on the <a href="https://www.federalregister.gov/documents/2022/02/24/2022-04027/2022-final-list-of-critical-minerals" target="_blank"><span style="color: blue;">2022 list published by the U.S. Geological Survey.</span></a></p>
+
+                        <p><br /><strong>Utah Mine Waste Inventory</strong><a href="https://ugspub.nr.utah.gov/publications/data_series/ds-8/ds-8.zip" target="_blank"><span style="color: blue;"> (data, </span></a><a href="http://doi.org/10.34191/DS-8" target="_blank"><span style="color: blue;"> publication) </span></a></p>
+                        <p class="tab" style="padding-left: 10px;">A database of significant mine waste features with an area greater than 2000 m<sup>2</sup> in Utah that includes information on spatial extent and geologic character of these features.</p>
 
                         <p><br /><strong>Mining Districts</strong>
 <a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-695.pdf" target="_blank"><span style="color: blue;">(publication, </span></a>
@@ -1568,6 +1568,9 @@ const critMinerals = new FeatureLayer({
     outFields: ["*"],
     popupTemplate: {
         title: "<b>Critical Mineral</b>",
+        // only the fields used by critMinContent; required for content to render
+        // when navigating between multiple selected features (otherwise 2nd+ go blank)
+        outFields: ["SITE_NAME", "commodity", "label", "CriticalMineral"],
         content: critMinContent
     },
     renderer: critMineralsRenderer,
@@ -1580,6 +1583,9 @@ const critMinPolys = new FeatureLayer({
     outFields: ["*"],
     popupTemplate: {
         title: "<b>Critical Mineral Areas</b>",
+        // only the fields used by critMinPolysContent; required for content to render
+        // when navigating between multiple selected features (otherwise 2nd+ go blank)
+        outFields: ["District", "Commodity", "label"],
         content: critMinPolysContent
     },
     renderer: critMineralAreasRenderer,
@@ -1588,22 +1594,51 @@ const critMinPolys = new FeatureLayer({
 
 function mineWasteContent(feature) {
     const a = feature.graphic.attributes;
+    // round to whole number with thousands separators; pass non-numeric values through unchanged
+    const num = function (v) {
+        return (v === null || v === undefined || String(v).trim() === "" || isNaN(Number(v)))
+            ? v
+            : Number(v).toLocaleString("en-US", { maximumFractionDigits: 0 });
+    };
+    // decode a coded-value domain to its display name; manual attribute reads return
+    // the raw code (e.g. "LeachPileHeap") instead of the decoded name ("Leach pile - heap")
+    const decode = function (fieldName, code) {
+        if (code === null || code === undefined || code === "") return code;
+        try {
+            const domain = feature.graphic.layer &&
+                feature.graphic.layer.getFieldDomain(fieldName, { feature: feature.graphic });
+            if (domain && domain.type === "coded-value") {
+                const name = domain.getName(code);
+                if (name !== null && name !== undefined && name !== "") return name;
+            }
+        } catch (e) {
+            console.warn("mineWasteContent: domain decode failed for", fieldName, e);
+        }
+        return code;
+    };
+    // subscript chemical-formula digits (e.g. H2SO4 -> H<sub>2</sub>SO<sub>4</sub>);
+    // only digits that immediately follow a letter are treated as formula subscripts
+    const sub = function (v) {
+        return (v === null || v === undefined)
+            ? v
+            : String(v).replace(/([A-Za-z])(\d+)/g, "$1<sub>$2</sub>");
+    };
     const rows = [
         ["Feature ID", a.Feature_ID],
         ["Mining District", a.Mining_District],
         ["County", a.County],
-        ["Feature Type", a.Feature_Type],
+        ["Feature Type", decode("Feature_Type", a.Feature_Type)],
         ["Feature Degree of Certainty", a.Feature_Degree_of_Certainty],
-        ["Feature Area", a.Feature_Area_Square_Meters, "Square meters"],
-        ["Calculated Volume", a.Calculated_Volume_Cubic_Meters, "Cubic meters"],
-        ["Major Commodities", a.Major_Commodity],
-        ["Minor Commodities", a.Minor_Commodity],
-        ["Occurrence Commodity", a.Occurrence_Commodity]
+        ["Feature Area", num(a.Feature_Area_Square_Meters), " m<sup>2</sup>"],
+        ["Calculated Volume", num(a.Calculated_Volume_Cubic_Meters), " m<sup>3</sup>"],
+        ["Major Commodities", sub(a.Major_Commodity)],
+        ["Minor Commodities", sub(a.Minor_Commodity)],
+        ["Occurrence Commodity", sub(a.Occurrence_Commodity)]
     ];
     return rows
         .filter(r => r[1] !== null && r[1] !== undefined && String(r[1]).trim() !== "")
         .map(r => {
-            const suffix = r[2] ? " " + r[2] : "";
+            const suffix = r[2] ? r[2] : "";
             return "<span class='bold' title='" + r[0] + "'><b>" + r[0] + ": </b></span>" + r[1] + suffix + "<br>";
         })
         .join("");
@@ -1614,8 +1649,37 @@ const mineWaste = new FeatureLayer({
     title: "Utah Mine Waste Inventory",
     outFields: ["*"],
     opacity: 0.5,
+    // override the service symbology (blue) with a black fill so the layer is
+    // distinguishable from the Metalliferous Mining Districts polygons.
+    // colors are opaque; layer opacity:0.5 above handles the transparency.
+    renderer: {
+        type: "simple",
+        symbol: {
+            type: "simple-fill",
+            style: "solid",
+            color: [0, 0, 0, 255],
+            outline: {
+                color: [60, 60, 60, 255],
+                width: 1
+            }
+        }
+    },
     popupTemplate: {
         title: "<b>Mine Waste Inventory</b>",
+        // only the fields used by mineWasteContent; required for content to render
+        // when navigating between multiple selected features (otherwise 2nd+ go blank)
+        outFields: [
+            "Feature_ID",
+            "Mining_District",
+            "County",
+            "Feature_Type",
+            "Feature_Degree_of_Certainty",
+            "Feature_Area_Square_Meters",
+            "Calculated_Volume_Cubic_Meters",
+            "Major_Commodity",
+            "Minor_Commodity",
+            "Occurrence_Commodity"
+        ],
         content: mineWasteContent
     },
     visible: false
