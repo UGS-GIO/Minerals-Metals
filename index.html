@@ -2083,12 +2083,7 @@ const mineWaste = new FeatureLayer({
 watchUtils.when(app.activeView.popup, "selectedFeature", function(evt) {
     console.log(evt);
 
-    if (evt.attributes.label == "Magnesium Potential In Brine" || evt.attributes.label == "Lithium Potential In Brine") {
-        console.log("hide Popup");
-        app.activeView.popup.close();
-    }
-
-    if (evt.layer.title == "Metalliferous Mining Districts") {
+    if (evt.layer && evt.layer.title == "Metalliferous Mining Districts") {
 
 query("#panelInfo").removeClass("in");
 query("#panelDetails").removeClass("in");
