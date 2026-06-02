@@ -1718,6 +1718,10 @@ const mineWaste = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Silica Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: silicaContent
 
         },
@@ -1732,6 +1736,10 @@ const mineWaste = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Bentonite Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: bentMinContent
 
         },
@@ -1746,6 +1754,10 @@ const mineWaste = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Dolomite Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: industrialMinContent
         },
         visible: false,
@@ -1759,6 +1771,10 @@ const mineWaste = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Gypsum Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: industrialMinContent
         },
         visible: false,
@@ -1772,6 +1788,10 @@ const mineWaste = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Limestone Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: industrialMinContent
         },
         visible: false,
@@ -1785,6 +1805,10 @@ const mineWaste = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Phosphate Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: phosphContent
         },
         visible: false,
@@ -1798,6 +1822,10 @@ const mineWaste = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Potash Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: potashContent
         },
         visible: false,
@@ -1811,6 +1839,10 @@ const mineWaste = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Alunite Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: aluniteContent
         },
         visible: false,
