@@ -614,6 +614,16 @@ require([
                         }]
                     ];
                 };
+            } else {
+                // Group headers should only expand/collapse, never toggle the whole
+                // group off (which would hide every sublayer). Lock the group visible
+                // so its visibility can't be switched off through any path (the eye
+                // toggle is already hidden via CSS, but the row/title can still toggle
+                // it). Individual sublayers remain user-controllable.
+                item.layer.visible = true;
+                watchUtils.watch(item.layer, "visible", function (visible) {
+                    if (!visible) { item.layer.visible = true; }
+                });
             }
         }
     });
