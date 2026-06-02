@@ -271,7 +271,7 @@
 
                         <p><br /><strong>Mining Districts</strong>
 <a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-695.pdf" target="_blank"><span style="color: blue;">(publication, </span></a>
-<a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Mining_Districts_20190116gdb.zip" target="_blank"><span style="color: blue;">GIS data)</span></a> 
+<a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Mining_Districts_20190116gdb.zip" target="_blank"><span style="color: blue;">GIS data)</span></a>
                         <p class="tab" style="padding-left: 10px;">Locations of Utah’s mining districts with summaries of relevant information for each district.</p>
 
                     <p><br /><strong>Industrial Mineral Resource Potential </strong>
@@ -2000,12 +2000,50 @@ const mineWaste = new FeatureLayer({
 
 
     app.activeView.popup.on("trigger-action", function(event) {
-        
+
             // Execute the photoGallery() function if the photo action is clicked
             if (event.action.id === "photo-gallery") {
                 photoGallery();
             }
         });
+
+    // Order popup features by draw order (topmost-drawn layer first) so that when
+    // a click hits overlapping polygons, the feature on the layer rendered on top
+    // is listed first. ArcGIS otherwise orders features by the map.layers
+    // collection (bottom layer first), which is the reverse of what's drawn on top.
+    watchUtils.watch(app.activeView.popup, "features", function (features) {
+        if (!features || features.length < 2) return;
+
+        // Flatten all leaf layers in draw order: map.layers is bottom -> top, and a
+        // group layer's sublayers inherit the group's slot in that stack.
+        var drawOrder = [];
+        (function walk(collection) {
+            collection.forEach(function (lyr) {
+                if (lyr.type === "group" && lyr.layers) {
+                    walk(lyr.layers);
+                } else {
+                    drawOrder.push(lyr);
+                }
+            });
+        })(app.activeView.map.layers);
+
+        // Higher index = drawn on top; layers not in the map (e.g. search graphics)
+        // get -1 and sink to the bottom of the list.
+        var rankOf = function (feature) {
+            return feature.layer ? drawOrder.indexOf(feature.layer) : -1;
+        };
+
+        // Stable sort keeps same-layer features in their original relative order.
+        var sorted = features.slice().sort(function (a, b) {
+            return rankOf(b) - rankOf(a);
+        });
+
+        // Only reassign when the order actually changed. The reassignment re-fires
+        // this watch, but the second pass sees the already-sorted order and no-ops,
+        // so this terminates rather than looping.
+        var changed = sorted.some(function (f, i) { return f !== features[i]; });
+        if (changed) app.activeView.popup.features = sorted;
+    });
 
         //console.log(app.activeView)
 
