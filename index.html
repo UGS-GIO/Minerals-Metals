@@ -258,17 +258,20 @@
                         <p><br /><strong>Utah Mineral Occurrence System (UMOS)</strong><a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-757/ofr-757.zip" target="_blank"><span style="color: blue;"> (data, </span></a><a href=" https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-757/ofr-757.pdf" target="_blank"><span style="color: blue;"> report) </span></a></p>
                         <p class="tab" style="padding-left: 10px;">A database of mineral occurrences, prospects, mines, and mineral resources in the state of Utah.</p>
 
-                       
+
 
                         <p><br /><strong>Critical Mineral Occurrences</strong>
                             <a href="https://ugspub.nr.utah.gov/publications/circular/c-135.pdf" target="_blank"><span style="color: blue;">(publication, </span></a>
-                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_Critical_Minerals.gdb.zip" target="_blank"><span style="color: blue;">current GIS data, </span></a> 
-                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_CriticalMinerals.gdb.zip" target="_blank"><span style="color: blue;">old GIS data)</span></a> 
+                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_Critical_Minerals.gdb.zip" target="_blank"><span style="color: blue;">current GIS data, </span></a>
+                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_CriticalMinerals.gdb.zip" target="_blank"><span style="color: blue;">old GIS data)</span></a>
                                                     <p class="tab" style="padding-left: 10px;">Locations in Utah with critical mineral potential and of known critical mineral occurrences. Definition of critical mineral is based on the <a href="https://www.federalregister.gov/documents/2022/02/24/2022-04027/2022-final-list-of-critical-minerals" target="_blank"><span style="color: blue;">2022 list published by the U.S. Geological Survey.</span></a></p>
+
+                        <p><br /><strong>Utah Mine Waste Inventory</strong><a href="https://ugspub.nr.utah.gov/publications/data_series/ds-8/ds-8.zip" target="_blank"><span style="color: blue;"> (data, </span></a><a href="http://doi.org/10.34191/DS-8" target="_blank"><span style="color: blue;"> publication) </span></a></p>
+                        <p class="tab" style="padding-left: 10px;">A database of significant mine waste features with an area greater than 2000 m<sup>2</sup> in Utah that includes information on spatial extent and geologic character of these features.</p>
 
                         <p><br /><strong>Mining Districts</strong>
 <a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-695.pdf" target="_blank"><span style="color: blue;">(publication, </span></a>
-<a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Mining_Districts_20190116gdb.zip" target="_blank"><span style="color: blue;">GIS data)</span></a> 
+<a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Mining_Districts_20190116gdb.zip" target="_blank"><span style="color: blue;">GIS data)</span></a>
                         <p class="tab" style="padding-left: 10px;">Locations of Utah’s mining districts with summaries of relevant information for each district.</p>
 
                     <p><br /><strong>Industrial Mineral Resource Potential </strong>
@@ -611,6 +614,16 @@ require([
                         }]
                     ];
                 };
+            } else {
+                // Group headers should only expand/collapse, never toggle the whole
+                // group off (which would hide every sublayer). Lock the group visible
+                // so its visibility can't be switched off through any path (the eye
+                // toggle is already hidden via CSS, but the row/title can still toggle
+                // it). Individual sublayers remain user-controllable.
+                item.layer.visible = true;
+                watchUtils.watch(item.layer, "visible", function (visible) {
+                    if (!visible) { item.layer.visible = true; }
+                });
             }
         }
     });
@@ -618,45 +631,18 @@ require([
 
 
     layerList.on("trigger-action", function(event) {
-
-        // Capture the action id.
         var id = event.action.id;
-        var title = event.item.title;
-
-        if (title === "Critical Mineral Areas") {
-            layer = critMinPolys;
-        } else if (title === "Mining Districts") {
-            layer = miningDistricts;
-        } else if (title === "Land Ownership") {
-            layer = adminBounds;
-        } else if (title === "Bentonite") {
-            layer = bentonite;
-        } else if (title === "Gypsum") {
-            layer = gypsum;
-        } else if (title === "Limestone") {
-            layer = limestone;
-        } else {
-            layer = dolomite;
-        }
+        var layer = event.item.layer;
 
         if (id === "increase-opacity") {
-
-            // if the increase-opacity action is triggered, then
-            // increase the opacity of the GroupLayer by 0.1
-
             if (layer.opacity < 1) {
-                layer.opacity += 0.1;
+                layer.opacity = Math.min(1, layer.opacity + 0.1);
             }
         } else if (id === "decrease-opacity") {
-
-            // if the decrease-opacity action is triggered, then
-            // decrease the opacity of the GroupLayer by 0.1
-
             if (layer.opacity > 0) {
-                layer.opacity -= 0.1;
+                layer.opacity = Math.max(0, layer.opacity - 0.1);
             }
         }
-
     });
 
 
@@ -1592,6 +1578,9 @@ const critMinerals = new FeatureLayer({
     outFields: ["*"],
     popupTemplate: {
         title: "<b>Critical Mineral</b>",
+        // only the fields used by critMinContent; required for content to render
+        // when navigating between multiple selected features (otherwise 2nd+ go blank)
+        outFields: ["SITE_NAME", "commodity", "label", "CriticalMineral"],
         content: critMinContent
     },
     renderer: critMineralsRenderer,
@@ -1602,11 +1591,108 @@ const critMinPolys = new FeatureLayer({
     url:'https://services.arcgis.com/ZzrwjTRez6FJiOq4/ArcGIS/rest/services/Metal_Mineral_Resources_web3_view/FeatureServer/20',
     title: "Critical Mineral Areas",
     outFields: ["*"],
+    opacity: 0.5,
     popupTemplate: {
         title: "<b>Critical Mineral Areas</b>",
+        // only the fields used by critMinPolysContent; required for content to render
+        // when navigating between multiple selected features (otherwise 2nd+ go blank)
+        outFields: ["District", "Commodity", "label"],
         content: critMinPolysContent
     },
     renderer: critMineralAreasRenderer,
+    visible: false
+});
+
+function mineWasteContent(feature) {
+    const a = feature.graphic.attributes;
+    // round to whole number with thousands separators; pass non-numeric values through unchanged
+    const num = function (v) {
+        return (v === null || v === undefined || String(v).trim() === "" || isNaN(Number(v)))
+            ? v
+            : Number(v).toLocaleString("en-US", { maximumFractionDigits: 0 });
+    };
+    // decode a coded-value domain to its display name; manual attribute reads return
+    // the raw code (e.g. "LeachPileHeap") instead of the decoded name ("Leach pile - heap")
+    const decode = function (fieldName, code) {
+        if (code === null || code === undefined || code === "") return code;
+        try {
+            const domain = feature.graphic.layer &&
+                feature.graphic.layer.getFieldDomain(fieldName, { feature: feature.graphic });
+            if (domain && domain.type === "coded-value") {
+                const name = domain.getName(code);
+                if (name !== null && name !== undefined && name !== "") return name;
+            }
+        } catch (e) {
+            console.warn("mineWasteContent: domain decode failed for", fieldName, e);
+        }
+        return code;
+    };
+    // subscript chemical-formula digits (e.g. H2SO4 -> H<sub>2</sub>SO<sub>4</sub>);
+    // only digits that immediately follow a letter are treated as formula subscripts
+    const sub = function (v) {
+        return (v === null || v === undefined)
+            ? v
+            : String(v).replace(/([A-Za-z])(\d+)/g, "$1<sub>$2</sub>");
+    };
+    const rows = [
+        ["Feature ID", a.Feature_ID],
+        ["Mining District", a.Mining_District],
+        ["County", a.County],
+        ["Feature Type", decode("Feature_Type", a.Feature_Type)],
+        ["Feature Degree of Certainty", a.Feature_Degree_of_Certainty],
+        ["Feature Area", num(a.Feature_Area_Square_Meters), " m<sup>2</sup>"],
+        ["Calculated Volume", num(a.Calculated_Volume_Cubic_Meters), " m<sup>3</sup>"],
+        ["Major Commodities", sub(a.Major_Commodity)],
+        ["Minor Commodities", sub(a.Minor_Commodity)],
+        ["Occurrence Commodity", sub(a.Occurrence_Commodity)]
+    ];
+    return rows
+        .filter(r => r[1] !== null && r[1] !== undefined && String(r[1]).trim() !== "")
+        .map(r => {
+            const suffix = r[2] ? r[2] : "";
+            return "<span class='bold' title='" + r[0] + "'><b>" + r[0] + ": </b></span>" + r[1] + suffix + "<br>";
+        })
+        .join("");
+}
+
+const mineWaste = new FeatureLayer({
+    url: "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Metal_Mineral_Resources_web3_view/FeatureServer/21",
+    title: "Utah Mine Waste Inventory",
+    outFields: ["*"],
+    opacity: 0.5,
+    // override the service symbology (blue) with a black fill so the layer is
+    // distinguishable from the Metalliferous Mining Districts polygons.
+    // colors are opaque; layer opacity:0.5 above handles the transparency.
+    renderer: {
+        type: "simple",
+        symbol: {
+            type: "simple-fill",
+            style: "solid",
+            color: [0, 0, 0, 255],
+            outline: {
+                color: [60, 60, 60, 255],
+                width: 1
+            }
+        }
+    },
+    popupTemplate: {
+        title: "<b>Mine Waste Inventory</b>",
+        // only the fields used by mineWasteContent; required for content to render
+        // when navigating between multiple selected features (otherwise 2nd+ go blank)
+        outFields: [
+            "Feature_ID",
+            "Mining_District",
+            "County",
+            "Feature_Type",
+            "Feature_Degree_of_Certainty",
+            "Feature_Area_Square_Meters",
+            "Calculated_Volume_Cubic_Meters",
+            "Major_Commodity",
+            "Minor_Commodity",
+            "Occurrence_Commodity"
+        ],
+        content: mineWasteContent
+    },
     visible: false
 });
 
@@ -1643,6 +1729,10 @@ const critMinPolys = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Silica Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: silicaContent
 
         },
@@ -1657,6 +1747,10 @@ const critMinPolys = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Bentonite Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: bentMinContent
 
         },
@@ -1671,6 +1765,10 @@ const critMinPolys = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Dolomite Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: industrialMinContent
         },
         visible: false,
@@ -1684,6 +1782,10 @@ const critMinPolys = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Gypsum Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: industrialMinContent
         },
         visible: false,
@@ -1697,6 +1799,10 @@ const critMinPolys = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Limestone Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: industrialMinContent
         },
         visible: false,
@@ -1710,6 +1816,10 @@ const critMinPolys = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Phosphate Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: phosphContent
         },
         visible: false,
@@ -1723,6 +1833,10 @@ const critMinPolys = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Potash Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: potashContent
         },
         visible: false,
@@ -1736,6 +1850,10 @@ const critMinPolys = new FeatureLayer({
 
         popupTemplate: {
             title: "<b>Alunite Potential</b>",
+            // content is a function, which ArcGIS can't introspect for field needs; request
+            // all fields (as the layer does) so the 2nd+ feature in a multi-feature popup
+            // isn't blank when navigating between selected features
+            outFields: ["*"],
             content: aluniteContent
         },
         visible: false,
@@ -1908,6 +2026,7 @@ const critMinPolys = new FeatureLayer({
 
     app.activeView.map.add(industrialMins);
     app.activeView.map.add(miningDistricts);
+    app.activeView.map.add(mineWaste);
     app.activeView.map.add(critMinGroup);
     app.activeView.map.add(umos);
 
@@ -1924,12 +2043,50 @@ const critMinPolys = new FeatureLayer({
 
 
     app.activeView.popup.on("trigger-action", function(event) {
-        
+
             // Execute the photoGallery() function if the photo action is clicked
             if (event.action.id === "photo-gallery") {
                 photoGallery();
             }
         });
+
+    // Order popup features by draw order (topmost-drawn layer first) so that when
+    // a click hits overlapping polygons, the feature on the layer rendered on top
+    // is listed first. ArcGIS otherwise orders features by the map.layers
+    // collection (bottom layer first), which is the reverse of what's drawn on top.
+    watchUtils.watch(app.activeView.popup, "features", function (features) {
+        if (!features || features.length < 2) return;
+
+        // Flatten all leaf layers in draw order: map.layers is bottom -> top, and a
+        // group layer's sublayers inherit the group's slot in that stack.
+        var drawOrder = [];
+        (function walk(collection) {
+            collection.forEach(function (lyr) {
+                if (lyr.type === "group" && lyr.layers) {
+                    walk(lyr.layers);
+                } else {
+                    drawOrder.push(lyr);
+                }
+            });
+        })(app.activeView.map.layers);
+
+        // Higher index = drawn on top; layers not in the map (e.g. search graphics)
+        // get -1 and sink to the bottom of the list.
+        var rankOf = function (feature) {
+            return feature.layer ? drawOrder.indexOf(feature.layer) : -1;
+        };
+
+        // Stable sort keeps same-layer features in their original relative order.
+        var sorted = features.slice().sort(function (a, b) {
+            return rankOf(b) - rankOf(a);
+        });
+
+        // Only reassign when the order actually changed. The reassignment re-fires
+        // this watch, but the second pass sees the already-sorted order and no-ops,
+        // so this terminates rather than looping.
+        var changed = sorted.some(function (f, i) { return f !== features[i]; });
+        if (changed) app.activeView.popup.features = sorted;
+    });
 
         //console.log(app.activeView)
 
@@ -1937,12 +2094,7 @@ const critMinPolys = new FeatureLayer({
 watchUtils.when(app.activeView.popup, "selectedFeature", function(evt) {
     console.log(evt);
 
-    if (evt.attributes.label == "Magnesium Potential In Brine" || evt.attributes.label == "Lithium Potential In Brine") {
-        console.log("hide Popup");
-        app.activeView.popup.close();
-    }
-
-    if (evt.layer.title == "Metalliferous Mining Districts") {
+    if (evt.layer && evt.layer.title == "Metalliferous Mining Districts") {
 
 query("#panelInfo").removeClass("in");
 query("#panelDetails").removeClass("in");
