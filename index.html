@@ -27,6 +27,8 @@
     <meta name="description" content="Utah Geologic and Mineral Resources">
 
     <title>Utah Mineral Resources</title>
+    <!-- UGS rebrand (ALL-4923): favicon per Rebranding Action Plan "Change out logos in header, footer, and favicon" -->
+    <link rel="icon" type="image/png" href="/images/UGS_Favicon_Logo_Template-BLU.png">
 
     <!-- Calcite Maps Bootstrap -->
     <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-bootstrap.min-v0.10.css">
@@ -85,13 +87,33 @@
             background-color: whitesmoke;
         }
 
-        .calcite-title:before {
-            content: url('/apps/jay/tests/UGS-blm.png');
-            padding: 6px 12px 0 2px;
-            cursor: pointer;
+        /* UGS rebrand (ALL-4923): header title text/old logo-before replaced with the
+           UGS motto/icon logo lockup, per Rebranding Action Plan "Change out logos in
+           header, footer, and favicon". Image is white (-WHT) for use on the navbar's
+           dark background. */
+        .ugs-header-logo {
+            height: 32px;
+            width: auto;
+            max-width: 100%;
+            vertical-align: middle;
         }
 
+        /* UGS rebrand (ALL-4923): link color for links in map popups (info windows)
+           and the About panel, per Rebranding Action Plan "Custom Apps: Link colors -
+           blue" using "New primary color: State of Utah Navy Blue" #071D49 */
+        .esri-popup a,
+        .esri-popup a:visited,
+        #collapseInfo .panel-body a,
+        #collapseInfo .panel-body a:visited {
+            color: #071D49;
+        }
 
+        .esri-popup a:hover,
+        .esri-popup a:focus,
+        #collapseInfo .panel-body a:hover,
+        #collapseInfo .panel-body a:focus {
+            color: #14356b;
+        }
 
         .esri-layer-list__item-container .tooltiptext {
             visibility: hidden;
@@ -187,7 +209,7 @@
         <!-- Title -->
         <div class="calcite-title calcite-overflow-hidden">
             <h1 style="display:contents;">
-                <span class="calcite-title-main">Utah Geological Survey</span>
+                <img class="calcite-title-main ugs-header-logo" src="/images/UGS_MottoIcon_Logo_Template-WHT.png" alt="Utah Geological Survey">
                 <span class="calcite-title-divider hidden-xs"></span>
                 <span class="calcite-title-sub hidden-xs">Utah Mineral Resources: Metals and Industrial Minerals</span>
             </h1>
@@ -257,27 +279,27 @@
 
                         <strong>Layer Information</strong></p>
 
-                        <p><br /><strong>Utah Mineral Occurrence System (UMOS)</strong><a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-757/ofr-757.zip" target="_blank"><span style="color: blue;"> (data, </span><span class="sr-only"> (opens in a new tab)</span></a><a href=" https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-757/ofr-757.pdf" target="_blank"><span style="color: blue;"> report) </span><span class="sr-only"> (opens in a new tab)</span></a></p>
+                        <p><br /><strong>Utah Mineral Occurrence System (UMOS)</strong><a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-757/ofr-757.zip" target="_blank"> (data, <span class="sr-only"> (opens in a new tab)</span></a><a href=" https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-757/ofr-757.pdf" target="_blank"> report) <span class="sr-only"> (opens in a new tab)</span></a></p>
                         <p class="tab" style="padding-left: 10px;">A database of mineral occurrences, prospects, mines, and mineral resources in the state of Utah.</p>
 
 
 
                         <p><br /><strong>Critical Mineral Occurrences</strong>
-                            <a href="https://ugspub.nr.utah.gov/publications/circular/c-135.pdf" target="_blank"><span style="color: blue;">(publication, </span><span class="sr-only"> (opens in a new tab)</span></a>
-                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_Critical_Minerals.gdb.zip" target="_blank"><span style="color: blue;">current GIS data, </span><span class="sr-only"> (opens in a new tab)</span></a>
-                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_CriticalMinerals.gdb.zip" target="_blank"><span style="color: blue;">old GIS data)</span><span class="sr-only"> (opens in a new tab)</span></a>
-                                                    <p class="tab" style="padding-left: 10px;">Locations in Utah with critical mineral potential and of known critical mineral occurrences. Definition of critical mineral is based on the <a href="https://www.federalregister.gov/documents/2022/02/24/2022-04027/2022-final-list-of-critical-minerals" target="_blank"><span style="color: blue;">2022 list published by the U.S. Geological Survey.</span><span class="sr-only"> (opens in a new tab)</span></a></p>
+                            <a href="https://ugspub.nr.utah.gov/publications/circular/c-135.pdf" target="_blank">(publication, <span class="sr-only"> (opens in a new tab)</span></a>
+                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_Critical_Minerals.gdb.zip" target="_blank">current GIS data, <span class="sr-only"> (opens in a new tab)</span></a>
+                            <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_CriticalMinerals.gdb.zip" target="_blank">old GIS data)<span class="sr-only"> (opens in a new tab)</span></a>
+                                                    <p class="tab" style="padding-left: 10px;">Locations in Utah with critical mineral potential and of known critical mineral occurrences. Definition of critical mineral is based on the <a href="https://www.federalregister.gov/documents/2022/02/24/2022-04027/2022-final-list-of-critical-minerals" target="_blank">2022 list published by the U.S. Geological Survey.<span class="sr-only"> (opens in a new tab)</span></a></p>
 
-                        <p><br /><strong>Utah Mine Waste Inventory</strong><a href="https://ugspub.nr.utah.gov/publications/data_series/ds-8/ds-8.zip" target="_blank"><span style="color: blue;"> (data, </span><span class="sr-only"> (opens in a new tab)</span></a><a href="http://doi.org/10.34191/DS-8" target="_blank"><span style="color: blue;"> publication) </span><span class="sr-only"> (opens in a new tab)</span></a></p>
+                        <p><br /><strong>Utah Mine Waste Inventory</strong><a href="https://ugspub.nr.utah.gov/publications/data_series/ds-8/ds-8.zip" target="_blank"> (data, <span class="sr-only"> (opens in a new tab)</span></a><a href="http://doi.org/10.34191/DS-8" target="_blank"> publication) <span class="sr-only"> (opens in a new tab)</span></a></p>
                         <p class="tab" style="padding-left: 10px;">A database of significant mine waste features with an area greater than 2000 m<sup>2</sup> in Utah that includes information on spatial extent and geologic character of these features.</p>
 
                         <p><br /><strong>Mining Districts</strong>
-<a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-695.pdf" target="_blank"><span style="color: blue;">(publication, </span><span class="sr-only"> (opens in a new tab)</span></a>
-<a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Mining_Districts_20190116gdb.zip" target="_blank"><span style="color: blue;">GIS data)</span><span class="sr-only"> (opens in a new tab)</span></a>
+<a href="https://ugspub.nr.utah.gov/publications/open_file_reports/ofr-695.pdf" target="_blank">(publication, <span class="sr-only"> (opens in a new tab)</span></a>
+<a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Mining_Districts_20190116gdb.zip" target="_blank">GIS data)<span class="sr-only"> (opens in a new tab)</span></a>
                         <p class="tab" style="padding-left: 10px;">Locations of Utah’s mining districts with summaries of relevant information for each district.</p>
 
                     <p><br /><strong>Industrial Mineral Resource Potential </strong>
-                    <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_IM_GIS.zip" target="_blank"><span style="color: blue;">(download)</span><span class="sr-only"> (opens in a new tab)</span></a> <br /><br /></p>
+                    <a href="https://geology.utah.gov/apps/blm_mineral/appfiles/Utah_IM_GIS.zip" target="_blank">(download)<span class="sr-only"> (opens in a new tab)</span></a> <br /><br /></p>
                     <p class="tab" style="padding-left: 10px;">Resource potential for various locatable industrial mineral commodities.</p>
                 
 
@@ -1554,7 +1576,7 @@ const umos = new FeatureLayer({
                     "<span class='bold' title='Deposit Size'><b>Deposit Size: </b></span>{DEP_SIZE}</b><br>" +
                     "<span class='bold' title='Mining District'><b>Mining District: </b></span>{DISTRICT}</b><br>" +
                     "<span class='bold' title='County'><b>County: </b></span>{COUNTY}</b><br>" +
-                    "<br><a href='https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS%20Explanation.pdf' target='_blank'><span style='color: blue;'> UMOS Explanation</span><span class='sr-only'> (opens in a new tab)</span></a>",
+                    "<br><a href='https://geology.utah.gov/apps/blm_mineral/appfiles/UMOS%20Explanation.pdf' target='_blank'> UMOS Explanation<span class='sr-only'> (opens in a new tab)</span></a>",
         fieldInfos: [{
             fieldName: "COMMODITY",
             },{
