@@ -17,3 +17,7 @@ over refactors — no rewrites on retiring code.
 
 ## Correctness
 - Fail loud on fetch/query errors — don't silently blank the map; handle empty/failed responses.
+
+## Review scope & severity
+- Skip (don't post findings): the vendored `lightbox2/` library wholesale — its `dist/*.min.*` bundles and `.min.map` sources.
+- Blocking here (not a nit): client-side app, no server-side DB and no merge-triggered deploy in this repo, so there's no SQL surface — a committed credential / API key / token is the blocking class.
